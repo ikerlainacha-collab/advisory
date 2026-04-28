@@ -1,0 +1,2001 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>PlanFinanciero</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--navy:#0f2244;--navy2:#1a3560;--blue:#2563eb;--blue-light:#eff6ff;--green:#16a34a;--green-light:#f0fdf4;--red:#dc2626;--red-light:#fef2f2;--amber:#d97706;--amber-light:#fffbeb;--bg:#f1f4f9;--card:#ffffff;--border:#e2e8f0;--border2:#cbd5e1;--text:#1e293b;--muted:#64748b;--input-bg:#fefce8;--input-border:#fbbf24;--header-bg:#0f2244;--tab-active:#2563eb}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.5}
+.app-header{background:var(--navy);color:white;padding:0 24px;display:flex;align-items:center;gap:16px;height:52px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.app-logo{font-weight:700;font-size:15px;letter-spacing:-.3px;white-space:nowrap}.app-logo span{color:#60a5fa}
+.tab-bar{background:var(--navy2);padding:0 24px;display:flex;gap:2px;overflow-x:auto;border-bottom:1px solid rgba(255,255,255,.1)}
+.tab-bar::-webkit-scrollbar{height:3px}.tab-bar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2)}
+.tab{padding:10px 16px;font-size:12px;font-weight:500;color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit}.tab:hover{color:rgba(255,255,255,.9)}.tab.active{color:#fff;border-bottom-color:#60a5fa}
+.main-scroll{height:calc(100vh - 90px);overflow-y:auto}
+.page{padding:24px;max-width:1400px;margin:0 auto}
+.section{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:20px;overflow:hidden}
+.section-header{background:var(--navy);color:white;padding:10px 16px;font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase}
+.page-title{font-size:18px;font-weight:700;color:var(--navy);margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid var(--border);letter-spacing:-.3px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{background:#f8fafc;color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:8px 12px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
+th:first-child{text-align:left}
+td{padding:7px 12px;border-bottom:1px solid #f1f5f9;text-align:right;color:var(--text)}
+td:first-child{text-align:left}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+.inp{background:var(--input-bg);border:1px solid var(--input-border);border-radius:4px;padding:3px 6px;font-family:'DM Mono',monospace;font-size:12px;width:100%;text-align:right;color:var(--text);outline:none}
+.inp:focus{border-color:var(--blue);box-shadow:0 0 0 2px #dbeafe}
+.computed{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted)}
+.row-total td{background:#f0f4fa;font-weight:700;border-top:2px solid var(--border2);border-bottom:2px solid var(--border2)}
+.row-subtotal td{background:#f8fafc;font-weight:600;border-top:1px solid var(--border2)}
+.val-pos{color:var(--green);font-weight:600;font-family:'DM Mono',monospace}
+.val-neg{color:var(--red);font-weight:600;font-family:'DM Mono',monospace}
+.val-neutral{font-family:'DM Mono',monospace}
+.val-warn{color:var(--amber);font-weight:600}
+.kpi-grid{display:grid;gap:12px;padding:16px}
+.kpi-grid-2{grid-template-columns:repeat(2,1fr)}.kpi-grid-3{grid-template-columns:repeat(3,1fr)}.kpi-grid-4{grid-template-columns:repeat(4,1fr)}.kpi-grid-5{grid-template-columns:repeat(5,1fr)}
+.kpi{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.kpi-label{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:4px}
+.kpi-value{font-size:18px;font-weight:700;font-family:'DM Mono',monospace;color:var(--navy)}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.kpi.green{border-left:3px solid var(--green)}.kpi.red{border-left:3px solid var(--red)}.kpi.blue{border-left:3px solid var(--blue)}.kpi.amber{border-left:3px solid var(--amber)}
+.badge{display:inline-block;padding:2px 8px;border-radius:9999px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.badge-alta{background:#fef2f2;color:#dc2626}.badge-media{background:#fffbeb;color:#d97706}.badge-baja{background:#f0fdf4;color:#16a34a}
+.badge-pendiente{background:#f1f5f9;color:#64748b}.badge-curso{background:#eff6ff;color:#2563eb}
+.badge-fijo{background:#eff6ff;color:#2563eb}.badge-variable{background:#fdf4ff;color:#9333ea}
+.badge-ok{background:#f0fdf4;color:#16a34a}.badge-warn{background:#fffbeb;color:#d97706}
+select.inp{padding:3px 6px;cursor:pointer}
+.diag{padding:12px 16px;border-radius:8px;font-size:12px;font-weight:500;margin:12px 16px}
+.diag-ok{background:var(--green-light);color:var(--green);border:1px solid #bbf7d0}
+.diag-warn{background:var(--amber-light);color:var(--amber);border:1px solid #fde68a}
+.diag-bad{background:var(--red-light);color:var(--red);border:1px solid #fecaca}
+.diag-info{background:var(--blue-light);color:var(--blue);border:1px solid #bfdbfe}
+.progress-wrap{background:#e2e8f0;border-radius:9999px;height:8px;overflow:hidden}
+.progress-bar{height:100%;border-radius:9999px;transition:width .3s}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+.sub-label{padding:8px 16px;background:#f8fafc;color:var(--muted);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--border)}
+.nota{font-size:11px;color:var(--muted);font-style:italic}
+.bar-chart{padding:16px;display:flex;flex-direction:column;gap:8px}
+.bar-row{display:flex;align-items:center;gap:8px}
+.bar-lbl{width:140px;font-size:11px;color:var(--text);text-align:right;flex-shrink:0}
+.bar-track{flex:1;background:#f1f5f9;border-radius:4px;height:18px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:6px;font-size:10px;font-weight:600;color:white}
+.bar-val{width:80px;font-size:11px;font-family:'DM Mono',monospace}
+tr.highlight td{background:#eff6ff}
+tr.section-row td{background:#f8fafc;font-weight:600;color:var(--navy)}
+.shock-base td{font-weight:700;background:#eff6ff}
+.amort-table td:nth-child(1){font-weight:600}
+@media(max-width:900px){.two-col,.three-col{grid-template-columns:1fr}.kpi-grid-4,.kpi-grid-5{grid-template-columns:repeat(2,1fr)}}
+.table-scroll{overflow-x:auto}
+
+/* AUTH SCREEN */
+.auth-wrap{position:fixed;inset:0;background:linear-gradient(135deg,#0f2244 0%,#1a3560 100%);display:flex;align-items:center;justify-content:center;z-index:1000;overflow-y:auto;padding:20px}
+.auth-card{background:white;border-radius:14px;padding:36px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.auth-logo{text-align:center;font-size:22px;font-weight:700;color:var(--navy);margin-bottom:6px;letter-spacing:-.5px}
+.auth-logo span{color:var(--blue)}
+.auth-sub{text-align:center;color:var(--muted);font-size:12px;margin-bottom:24px}
+.auth-tabs{display:flex;gap:4px;margin-bottom:20px;background:#f1f5f9;padding:4px;border-radius:8px}
+.auth-tab{flex:1;padding:8px 12px;border:none;background:none;font-family:inherit;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border-radius:6px;transition:all .15s}
+.auth-tab.active{background:white;color:var(--navy);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.auth-field{margin-bottom:14px}
+.auth-label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.auth-input{width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:7px;font-family:'DM Mono',monospace;font-size:14px;outline:none;background:white;color:var(--text);transition:border .15s,box-shadow .15s}
+.auth-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #dbeafe}
+.auth-input.error{border-color:var(--red);background:#fef2f2}
+.auth-btn{width:100%;padding:11px;background:var(--navy);color:white;border:none;border-radius:7px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;margin-top:6px}
+.auth-btn:hover{background:#0a1830}
+.auth-btn.primary{background:var(--blue)}.auth-btn.primary:hover{background:#1e40af}
+.auth-error{background:#fef2f2;color:var(--red);border:1px solid #fecaca;padding:8px 12px;border-radius:6px;font-size:12px;margin-bottom:12px}
+.auth-success{background:#f0fdf4;color:var(--green);border:1px solid #bbf7d0;padding:8px 12px;border-radius:6px;font-size:12px;margin-bottom:12px}
+.auth-hint{font-size:11px;color:var(--muted);margin-top:4px;font-style:italic}
+.auth-disclaimer{font-size:10.5px;color:var(--muted);background:#f8fafc;border-left:3px solid var(--amber);padding:10px 12px;border-radius:4px;margin-top:18px;line-height:1.5}
+
+/* MODAL OVERLAY */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,34,68,.55);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.modal{background:white;border-radius:12px;width:100%;max-width:640px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:white;border-radius:12px 12px 0 0}
+.modal-title{font-size:14px;font-weight:600;letter-spacing:.3px}
+.modal-close{background:none;border:none;color:white;font-size:22px;cursor:pointer;padding:0;line-height:1;opacity:.7}.modal-close:hover{opacity:1}
+.modal-body{padding:18px 20px;overflow-y:auto;flex:1}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;background:#f8fafc;border-radius:0 0 12px 12px}
+.modal-btn{padding:8px 16px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:white;color:var(--text)}
+.modal-btn:hover{background:#f1f5f9}
+.modal-btn.primary{background:var(--blue);color:white;border-color:var(--blue)}
+.modal-btn.primary:hover{background:#1e40af}
+.modal-btn.success{background:var(--green);color:white;border-color:var(--green)}
+.modal-btn.success:hover{background:#15803d}
+.email-preview{background:#f8fafc;border:1px solid var(--border);border-radius:6px;padding:12px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text);white-space:pre-wrap;max-height:340px;overflow-y:auto;line-height:1.5}
+
+/* HEADER USER MENU */
+.user-menu{position:relative}
+.user-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:11px;font-family:inherit;display:flex;align-items:center;gap:6px}
+.user-btn:hover{background:rgba(255,255,255,.18)}
+.user-dropdown{position:absolute;top:calc(100% + 6px);right:0;background:white;border:1px solid var(--border2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);min-width:200px;overflow:hidden;z-index:200}
+.user-dropdown-item{padding:9px 14px;font-size:12px;color:var(--text);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;display:flex;align-items:center;gap:8px}
+.user-dropdown-item:hover{background:#f1f5f9}
+.user-dropdown-item.danger{color:var(--red);border-top:1px solid var(--border)}
+.send-advisor-btn{background:var(--blue);border:none;color:white;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:11px;font-family:inherit;font-weight:600;display:flex;align-items:center;gap:6px}
+.send-advisor-btn:hover{background:#1e40af}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+
+<script>
+const F = {
+  pmt(rate,nper,pv){if(rate===0)return pv/nper;return pv*rate/(1-Math.pow(1+rate,-nper))},
+  pmtFV(rate,nper,fv,pv0=0){if(rate===0)return(fv-pv0)/nper;const factor=Math.pow(1+rate,nper);return(fv-pv0*factor)*rate/(factor-1)},
+  pvAnnuity(rate,nper,pmt){if(rate===0)return pmt*nper;return pmt*(1-Math.pow(1+rate,-nper))/rate},
+  fvGrowingAnnuity(pmt0,r,g,n){if(n<=0)return 0;if(Math.abs(r-g)<1e-9)return pmt0*n*Math.pow(1+r,n);return pmt0*(Math.pow(1+r,n)-Math.pow(1+g,n))/(r-g)},
+  pvGrowingAnnuity(pmt0,r,g,n){if(n<=0)return 0;if(Math.abs(r-g)<1e-9)return pmt0*n/(1+r);return pmt0*(1-Math.pow((1+g)/(1+r),n))/(r-g)},
+  nper(rate,pmt,pv){if(rate===0)return pv/pmt;return-Math.log(1-rate*pv/pmt)/Math.log(1+rate)},
+  eur(n,dec=0){if(n===null||n===undefined||isNaN(n)||!isFinite(n))return'—';return new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',minimumFractionDigits:dec,maximumFractionDigits:dec}).format(n)},
+  num(n,dec=0){if(n===null||n===undefined||isNaN(n)||!isFinite(n))return'—';return new Intl.NumberFormat('es-ES',{minimumFractionDigits:dec,maximumFractionDigits:dec}).format(n)},
+  pct(n,dec=1){if(n===null||n===undefined||isNaN(n)||!isFinite(n))return'—';return(n*100).toFixed(dec)+'%'},
+  valClass(n){if(!isFinite(n))return'';return n>=0?'val-pos':'val-neg'},
+  amortSchedule(capital,rate,plazo){const r=rate/12;const n=plazo*12;const cuota=F.pmt(r,n,capital);const rows=[];let saldo=capital;for(let anio=1;anio<=plazo;anio++){let interesesAnio=0,amortAnio=0;for(let m=1;m<=12;m++){const interes=saldo*r;const amort=cuota-interes;interesesAnio+=interes;amortAnio+=amort;saldo-=amort}rows.push({anio,cuota:cuota*12,intereses:interesesAnio,amortizacion:amortAnio,capitalPendiente:Math.max(0,saldo)})}return rows},
+  amortScheduleAleman(capital,rate,plazo){const r=rate/12;const n=plazo*12;const amortMensual=capital/n;const rows=[];let saldo=capital;for(let anio=1;anio<=plazo;anio++){let interesesAnio=0,amortAnio=0,cuotaAnio=0;for(let m=1;m<=12;m++){const interes=saldo*r;interesesAnio+=interes;amortAnio+=amortMensual;cuotaAnio+=(interes+amortMensual);saldo-=amortMensual}rows.push({anio,cuota:cuotaAnio,intereses:interesesAnio,amortizacion:amortAnio,capitalPendiente:Math.max(0,saldo)})}return rows},
+  amortScheduleAmericano(capital,rate,plazo){const r=rate/12;const cuotaMensual=capital*r;const rows=[];for(let anio=1;anio<=plazo;anio++){const isLast=anio===plazo;const intereses=cuotaMensual*12;const amortizacion=isLast?capital:0;rows.push({anio,cuota:intereses+amortizacion,intereses,amortizacion,capitalPendiente:isLast?0:capital})}return rows},
+  amortScheduleByType(tipo,capital,rate,plazo){if(capital<=0||plazo<=0)return[];switch(tipo){case 'aleman':return F.amortScheduleAleman(capital,rate,plazo);case 'americano':return F.amortScheduleAmericano(capital,rate,plazo);case 'frances':default:return F.amortSchedule(capital,rate,plazo)}},
+  cuotaMensualByType(tipo,capital,rate,plazo){if(capital<=0||plazo<=0)return 0;const r=rate/12;const n=plazo*12;switch(tipo){case 'aleman':return capital/n+capital*r;case 'americano':return capital*r;case 'frances':default:return F.pmt(r,n,capital)}}
+};
+window.F=F;
+
+// ===== CONFIGURACIÓN =====
+// Email del asesor donde llegan los resúmenes de los clientes.
+// Se usa Formsubmit.co (sin registro). La primera vez que un cliente envíe un
+// resumen, recibirás un email de confirmación de Formsubmit. Pulsa el enlace
+// "Confirm email" UNA SOLA VEZ y a partir de entonces todos los envíos llegan
+// automáticamente. No hay claves ni cuentas que mantener.
+const ADVISOR_EMAIL = 'ikerlainach@gmail.com';
+
+// CLIENT TOKEN + PIN HELPERS
+const CLIENT = {
+  parseUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('c');
+    const name = params.get('n');
+    const pinHash = params.get('p');
+    return token ? { token, name: name ? decodeURIComponent(name) : 'Cliente', pinHash } : null;
+  },
+  generateToken() {
+    if (crypto.randomUUID) return crypto.randomUUID();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  },
+  generatePin() {
+    // 4-digit PIN, avoiding leading zeros for cleaner UX
+    return String(Math.floor(1000 + Math.random() * 9000));
+  },
+  async hashPin(pin) {
+    const buf = new TextEncoder().encode('pf_pin_v1_' + pin);
+    const h = await crypto.subtle.digest('SHA-256', buf);
+    return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
+  },
+  buildLink(token, name, pinHash) {
+    const base = window.location.origin + window.location.pathname;
+    let url = `${base}?c=${token}&n=${encodeURIComponent(name || 'Cliente')}`;
+    if (pinHash) url += `&p=${pinHash}`;
+    return url;
+  },
+  getClientList() {
+    try { return JSON.parse(localStorage.getItem('pf_advisor_clients') || '[]'); }
+    catch { return []; }
+  },
+  saveClientList(list) {
+    localStorage.setItem('pf_advisor_clients', JSON.stringify(list));
+  },
+  isUnlocked(token) {
+    try { return localStorage.getItem(`pf_unlocked_${token}`) === '1'; } catch { return false; }
+  },
+  setUnlocked(token) {
+    try { localStorage.setItem(`pf_unlocked_${token}`, '1'); } catch {}
+  },
+  getAttempts(token) {
+    try { return JSON.parse(localStorage.getItem(`pf_attempts_${token}`) || '[]'); } catch { return []; }
+  },
+  addAttempt(token) {
+    const list = CLIENT.getAttempts(token);
+    list.push(Date.now());
+    try { localStorage.setItem(`pf_attempts_${token}`, JSON.stringify(list.slice(-20))); } catch {}
+    return list;
+  },
+};
+window.CLIENT = CLIENT;
+
+// Send email directly via Formsubmit (no signup required)
+const sendEmailDirect = async ({ subject, body, clientName }) => {
+  try {
+    const res = await fetch(`https://formsubmit.co/ajax/${ADVISOR_EMAIL}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        _subject: subject,
+        _captcha: 'false',
+        _template: 'box',
+        cliente: clientName || 'Cliente',
+        resumen: body,
+      })
+    });
+    const data = await res.json();
+    return { ok: data.success === 'true' || data.success === true, response: data };
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
+};
+window.sendEmailDirect = sendEmailDirect;
+</script>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const Sheet1 = ({ state, setState }) => {
+  const { gastos, ingresos, fondoEmergencia } = state;
+  const [editingGastos, setEditingGastos] = useState(false);
+  const updateGasto = (id, field, val) => setState(s => ({ ...s, gastos: s.gastos.map(g => g.id === id ? { ...g, [field]: field === 'mensual' ? parseFloat(val) || 0 : val } : g) }));
+  const removeGasto = (id) => setState(s => ({ ...s, gastos: s.gastos.filter(g => g.id !== id).map((g, i) => ({ ...g, id: i + 1 })) }));
+  const addGasto = () => setState(s => { const maxId = s.gastos.length > 0 ? Math.max(...s.gastos.map(g => g.id)) : 0; return { ...s, gastos: [...s.gastos, { id: maxId + 1, categoria: 'Nueva partida', mensual: 0, tipo: 'Variable', clase: 'Personal', notas: '', confirmed: false }] }; });
+  const updateIngreso = (id, field, val) => setState(s => ({ ...s, ingresos: s.ingresos.map(g => g.id === id ? { ...g, [field]: ['mensualBruto','tipoMarginal'].includes(field) ? parseFloat(val) || 0 : val } : g) }));
+  const removeIngreso = (id) => setState(s => ({ ...s, ingresos: s.ingresos.filter(i => i.id !== id).map((i, idx) => ({ ...i, id: idx + 1 })) }));
+  const confirmGasto = (id) => setState(s => ({ ...s, gastos: s.gastos.map(g => g.id === id ? { ...g, confirmed: true } : g) }));
+  const confirmIngreso = (id) => setState(s => ({ ...s, ingresos: s.ingresos.map(i => i.id === id ? { ...i, confirmed: true } : i) }));
+  const addIngreso = () => setState(s => { const maxId = s.ingresos.length > 0 ? Math.max(...s.ingresos.map(i => i.id)) : 0; return { ...s, ingresos: [...s.ingresos, { id: maxId + 1, fuente: 'Nueva fuente', mensualBruto: 0, tipoFiscal: 'Otros', tipoMarginal: 0.25, notas: '', confirmed: false }] }; });
+  const gastosFijos = gastos.filter(g => g.tipo === 'Fijo').reduce((a, g) => a + g.mensual, 0);
+  const gastosVariables = gastos.filter(g => g.tipo === 'Variable').reduce((a, g) => a + g.mensual, 0);
+  const totalGastos = gastosFijos + gastosVariables;
+  const ingresosCalc = ingresos.map(i => ({ ...i, anualBruto: i.mensualBruto * 12, anualNeto: i.mensualBruto * 12 * (1 - i.tipoMarginal), mensualNeto: i.mensualBruto * (1 - i.tipoMarginal) }));
+  const totalMensualBruto = ingresosCalc.reduce((a, i) => a + i.mensualBruto, 0);
+  const totalMensualNeto = ingresosCalc.reduce((a, i) => a + i.mensualNeto, 0);
+  const totalAnualNeto = ingresosCalc.reduce((a, i) => a + i.anualNeto, 0);
+  const superavitMensual = totalMensualNeto - totalGastos;
+  const superavitAnual = totalAnualNeto - totalGastos * 12;
+  const tasaAhorro = totalMensualNeto > 0 ? superavitMensual / totalMensualNeto : 0;
+  const obj3m = gastosFijos * 3, obj6m = gastosFijos * 6, obj12m = gastosFijos * 12;
+  const coberturaFondo = obj6m > 0 ? fondoEmergencia / obj6m : 0;
+  const gastoClasses = [...new Set(gastos.map(g => g.clase))];
+  const claseTotals = gastoClasses.map(cls => ({ cls, total: gastos.filter(g => g.clase === cls).reduce((a, g) => a + g.mensual, 0) })).sort((a, b) => b.total - a.total);
+  return (
+    <div className="page">
+      <div className="page-title">PLAN FINANCIERO — GASTOS E INGRESOS HOY</div>
+      <div className="kpi-grid kpi-grid-4" style={{marginBottom:20}}>
+        <div className={`kpi ${superavitMensual>=0?'green':'red'}`}><div className="kpi-label">Superávit / Déficit Mensual</div><div className={`kpi-value ${F.valClass(superavitMensual)}`}>{F.eur(superavitMensual)}</div><div className="kpi-sub">Neto mensual tras gastos</div></div>
+        <div className="kpi blue"><div className="kpi-label">Tasa de Ahorro</div><div className="kpi-value">{F.pct(tasaAhorro)}</div><div className="kpi-sub">% ingresos netos ahorrados</div></div>
+        <div className="kpi"><div className="kpi-label">Ingresos Netos Mensuales</div><div className="kpi-value val-neutral">{F.eur(totalMensualNeto)}</div></div>
+        <div className="kpi"><div className="kpi-label">Total Gastos Mensuales</div><div className="kpi-value val-neutral">{F.eur(totalGastos)}</div></div>
+      </div>
+      <div className="two-col">
+        <div>
+          <div className="section">
+            <div className="section-header">GASTOS — Valores Mensuales y Anuales</div>
+            <div className="table-scroll"><table><thead><tr><th style={{width:24}}>#</th><th style={{textAlign:'left'}}>Categoría</th><th>Mensual (€)</th><th>Anual (€)</th><th>Tipo</th><th>Clase</th><th style={{width:32}}></th></tr></thead>
+            <tbody>
+              {gastos.map(g => (
+                <tr key={g.id} style={{background:(!g.confirmed||editingGastos)?'#f0fdf4':''}}>
+                  <td style={{color:'var(--muted)'}}>{g.id}</td>
+                  <td>{(!g.confirmed||editingGastos)?<input className="inp" type="text" value={g.categoria} onChange={e=>updateGasto(g.id,'categoria',e.target.value)} style={{width:'100%',minWidth:140,textAlign:'left'}}/>:<span>{g.categoria}</span>}</td>
+                  <td>{(!g.confirmed||editingGastos)?<input className="inp" type="number" value={g.mensual} onChange={e=>updateGasto(g.id,'mensual',e.target.value)} style={{width:80}}/>:<span className="val-neutral">{F.eur(g.mensual)}</span>}</td>
+                  <td className="computed">{F.num(g.mensual*12)}</td>
+                  <td>{(!g.confirmed||editingGastos)?<select className="inp" value={g.tipo} onChange={e=>updateGasto(g.id,'tipo',e.target.value)} style={{width:80}}><option>Fijo</option><option>Variable</option></select>:<span className={`badge badge-${g.tipo.toLowerCase()}`}>{g.tipo}</span>}</td>
+                  <td>{(!g.confirmed||editingGastos)?<select className="inp" value={g.clase} onChange={e=>updateGasto(g.id,'clase',e.target.value)} style={{width:90}}>{['Hogar','Hipoteca','Impuestos','Seguros','Transporte','Educación','Personal','Salud','Reserva','Otros'].map(c=><option key={c}>{c}</option>)}</select>:<span style={{color:'var(--muted)',fontSize:11}}>{g.clase}</span>}</td>
+                  <td style={{display:'flex',gap:4,alignItems:'center'}}>
+                    {!g.confirmed&&<button onClick={()=>confirmGasto(g.id)} style={{background:'var(--green)',color:'white',border:'none',borderRadius:4,cursor:'pointer',fontSize:13,padding:'2px 7px',fontWeight:700}}>✓</button>}
+                    <button onClick={()=>removeGasto(g.id)} style={{background:'none',border:'none',cursor:'pointer',color:'var(--red)',fontSize:15,lineHeight:1,padding:'2px 4px'}}>✕</button>
+                  </td>
+                </tr>
+              ))}
+              <tr><td colSpan={7} style={{padding:'6px 12px'}}><div style={{display:'flex',gap:8,alignItems:'center'}}><button onClick={addGasto} style={{background:'var(--blue)',color:'white',border:'none',borderRadius:6,padding:'5px 14px',cursor:'pointer',fontSize:12,fontFamily:'inherit',fontWeight:500}}>+ Añadir partida</button><button onClick={()=>setEditingGastos(e=>!e)} style={{background:editingGastos?'var(--green)':'#64748b',color:'white',border:'none',borderRadius:6,padding:'5px 12px',cursor:'pointer',fontSize:12,fontFamily:'inherit',fontWeight:500}}>{editingGastos?'✓ Listo':'✏ Editar'}</button></div></td></tr>
+              <tr className="row-subtotal"><td colSpan={2}>Subtotal FIJOS</td><td className="val-neutral">{F.eur(gastosFijos)}</td><td className="val-neutral">{F.eur(gastosFijos*12)}</td><td colSpan={3}></td></tr>
+              <tr className="row-subtotal"><td colSpan={2}>Subtotal VARIABLES</td><td className="val-neutral">{F.eur(gastosVariables)}</td><td className="val-neutral">{F.eur(gastosVariables*12)}</td><td colSpan={3}></td></tr>
+              <tr className="row-total"><td colSpan={2}>TOTAL GASTOS</td><td className="val-neutral">{F.eur(totalGastos)}</td><td className="val-neutral">{F.eur(totalGastos*12)}</td><td colSpan={3}></td></tr>
+            </tbody></table></div>
+          </div>
+          <div className="section">
+            <div className="section-header">FONDO DE EMERGENCIA</div>
+            <div className="table-scroll"><table><tbody>
+              <tr><td>Gasto mensual fijo (base)</td><td className="val-neutral">{F.eur(gastosFijos)}</td></tr>
+              <tr><td>Objetivo 3 meses</td><td className="val-neutral">{F.eur(obj3m)}</td></tr>
+              <tr><td>Objetivo 6 meses <span className="nota">(recomendado)</span></td><td className="val-neutral">{F.eur(obj6m)}</td></tr>
+              <tr><td>Objetivo 12 meses <span className="nota">(conservador)</span></td><td className="val-neutral">{F.eur(obj12m)}</td></tr>
+              <tr><td>Fondo actual (€)</td><td><input className="inp" type="number" value={fondoEmergencia} onChange={e=>setState(s=>({...s,fondoEmergencia:parseFloat(e.target.value)||0}))} style={{width:100}}/></td></tr>
+              <tr><td>% cobertura sobre 6 meses</td><td className={coberturaFondo>=1?'val-pos':coberturaFondo>=0.5?'val-warn':'val-neg'}>{F.pct(coberturaFondo)}</td></tr>
+            </tbody></table></div>
+            <div style={{padding:'8px 16px'}}><div className="progress-wrap"><div className="progress-bar" style={{width:Math.min(100,coberturaFondo*100)+'%',background:coberturaFondo>=1?'var(--green)':coberturaFondo>=0.5?'var(--amber)':'var(--red)'}}/></div></div>
+          </div>
+          <div className="section"><div className="section-header">Distribución por Categoría</div>
+            <div className="bar-chart">{claseTotals.filter(c=>c.total>0).map(c=>(<div className="bar-row" key={c.cls}><div className="bar-lbl">{c.cls}</div><div className="bar-track"><div className="bar-fill" style={{width:Math.min(100,c.total/totalGastos*100)+'%',background:'var(--blue)'}}>{c.total/totalGastos>0.08?F.pct(c.total/totalGastos):''}</div></div><div className="bar-val">{F.eur(c.total)}</div></div>))}</div>
+          </div>
+        </div>
+        <div>
+          <div className="section">
+            <div className="section-header">INGRESOS — Valores Brutos y Netos</div>
+            <div className="table-scroll"><table><thead><tr><th style={{width:24}}>#</th><th style={{textAlign:'left'}}>Fuente</th><th>Mensual Bruto</th><th>Tipo Marginal</th><th>Mensual Neto</th><th>Anual Neto</th><th style={{width:32}}></th></tr></thead>
+            <tbody>
+              {ingresosCalc.map(i=>(<tr key={i.id} style={{background:i.confirmed?'':'#f0fdf4'}}>
+                <td style={{color:'var(--muted)'}}>{i.id}</td>
+                <td>{i.confirmed?<div><span>{i.fuente}</span>{i.notas&&<div className="nota">{i.notas}</div>}</div>:<input className="inp" type="text" value={i.fuente} autoFocus onChange={e=>updateIngreso(i.id,'fuente',e.target.value)} style={{width:'100%',minWidth:140,textAlign:'left'}}/>}</td>
+                <td>{i.confirmed?<span className="val-neutral">{F.eur(i.mensualBruto)}</span>:<input className="inp" type="number" value={i.mensualBruto} onChange={e=>updateIngreso(i.id,'mensualBruto',e.target.value)} style={{width:80}}/>}</td>
+                <td>{i.confirmed?<span className="computed">{F.pct(i.tipoMarginal)}</span>:<input className="inp" type="number" step="0.01" value={i.tipoMarginal} onChange={e=>updateIngreso(i.id,'tipoMarginal',e.target.value)} style={{width:60}}/>}</td>
+                <td className="computed">{F.eur(i.mensualNeto)}</td><td className="computed">{F.eur(i.anualNeto)}</td>
+                <td style={{display:'flex',gap:4,alignItems:'center'}}>
+                  {!i.confirmed&&<button onClick={()=>confirmIngreso(i.id)} style={{background:'var(--green)',color:'white',border:'none',borderRadius:4,cursor:'pointer',fontSize:13,padding:'2px 7px',fontWeight:700}}>✓</button>}
+                  <button onClick={()=>removeIngreso(i.id)} style={{background:'none',border:'none',cursor:'pointer',color:'var(--red)',fontSize:15,lineHeight:1,padding:'2px 4px'}}>✕</button>
+                </td>
+              </tr>))}
+              <tr><td colSpan={7} style={{padding:'6px 12px'}}><button onClick={addIngreso} style={{background:'var(--blue)',color:'white',border:'none',borderRadius:6,padding:'5px 14px',cursor:'pointer',fontSize:12,fontFamily:'inherit',fontWeight:500}}>+ Añadir fuente de ingreso</button></td></tr>
+              <tr className="row-total"><td colSpan={2}>TOTAL INGRESOS</td><td className="val-neutral">{F.eur(totalMensualBruto)}</td><td></td><td className="val-neutral">{F.eur(totalMensualNeto)}</td><td className="val-neutral">{F.eur(totalAnualNeto)}</td><td></td></tr>
+            </tbody></table></div>
+          </div>
+          <div className="section"><div className="section-header">RESUMEN — EQUILIBRIO FINANCIERO HOY</div>
+            <div className="table-scroll"><table><tbody>
+              <tr><td>Ingresos netos mensuales</td><td className="val-pos">{F.eur(totalMensualNeto)}</td></tr>
+              <tr><td>Gastos mensuales totales</td><td className="val-neg">−{F.eur(totalGastos)}</td></tr>
+              <tr className="row-subtotal"><td>Superávit / Déficit mensual</td><td className={F.valClass(superavitMensual)}>{F.eur(superavitMensual)}</td></tr>
+              <tr><td>Ingresos netos anuales</td><td className="val-pos">{F.eur(totalAnualNeto)}</td></tr>
+              <tr><td>Gastos anuales totales</td><td className="val-neg">−{F.eur(totalGastos*12)}</td></tr>
+              <tr className="row-subtotal"><td>Superávit / Déficit anual</td><td className={F.valClass(superavitAnual)}>{F.eur(superavitAnual)}</td></tr>
+              <tr className="row-total"><td>Tasa de ahorro</td><td className={tasaAhorro>=0.2?'val-pos':tasaAhorro>=0.1?'val-warn':'val-neg'}>{F.pct(tasaAhorro)}</td></tr>
+            </tbody></table></div>
+            <div className={`diag ${superavitMensual>=0?'diag-ok':'diag-bad'}`}>{superavitMensual>=0?`✓ Equilibrio positivo. Capacidad de ahorro mensual: ${F.eur(superavitMensual)}. Tasa de ahorro: ${F.pct(tasaAhorro)}.`:`⚠ Déficit mensual de ${F.eur(Math.abs(superavitMensual))}. Los gastos superan los ingresos netos.`}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Stepper = ({ value, step, min=0, format, onChange }) => {
+  const inc = () => onChange(Math.round((value + step) * 1e8) / 1e8);
+  const dec = () => onChange(Math.max(min, Math.round((value - step) * 1e8) / 1e8));
+  return (
+    <div style={{display:'inline-flex',alignItems:'center',gap:2,border:'1px solid var(--border2)',borderRadius:5,overflow:'hidden',background:'white'}}>
+      <button onClick={dec} style={{background:'none',border:'none',padding:'1px 5px',cursor:'pointer',color:'var(--muted)',fontSize:12,lineHeight:1,userSelect:'none'}}>▼</button>
+      <span style={{padding:'1px 6px',fontSize:12,fontFamily:'DM Mono,monospace',minWidth:60,textAlign:'center',color:'var(--text)'}}>{format?format(value):value}</span>
+      <button onClick={inc} style={{background:'none',border:'none',padding:'1px 5px',cursor:'pointer',color:'var(--navy)',fontSize:12,lineHeight:1,userSelect:'none'}}>▲</button>
+    </div>
+  );
+};
+
+const Sheet2 = ({ state, setState }) => {
+  const { objetivos, gastos, ingresos } = state;
+  const [editingObjetivos, setEditingObjetivos] = useState(false);
+  const gastosFijos = gastos.filter(g=>g.tipo==='Fijo').reduce((a,g)=>a+g.mensual,0);
+  const totalGastos = gastos.reduce((a,g)=>a+g.mensual,0);
+  const totalMensualNeto = ingresos.reduce((a,i)=>a+i.mensualBruto*(1-i.tipoMarginal),0);
+  const capacidadAhorro = totalMensualNeto - totalGastos;
+  const updateObj = (idx,field,val) => setState(s=>{const obs=[...s.objetivos];obs[idx]={...obs[idx],[field]:['importeHoy','anosPlayzo','inflacion','rentabilidad','capitalInicial','aportacionActual'].includes(field)?(parseFloat(val)||0):val};return{...s,objetivos:obs}});
+  const removeObj = (idx) => setState(s=>({...s,objetivos:s.objetivos.filter((_,i)=>i!==idx)}));
+  const confirmObj = (idx) => setState(s=>({...s,objetivos:s.objetivos.map((o,i)=>i===idx?{...o,confirmed:true}:o)}));
+  const addObj = () => setState(s=>({...s,objetivos:[...s.objetivos,{objetivo:'Nuevo objetivo',importeHoy:10000,anosPlayzo:5,inflacion:0.025,rentabilidad:0.04,capitalInicial:0,aportacionActual:0,prioridad:'Media',estado:'Pendiente',confirmed:false}]}));
+  const computed = objetivos.map((o,idx)=>{
+    let importeHoy=o.importeHoy;
+    if(idx===0) importeHoy=gastosFijos*6;
+    const anos=o.anosPlayzo||0,r=o.rentabilidad||0,inf=o.inflacion||0;
+    const vf=importeHoy?importeHoy*Math.pow(1+inf,anos):null;
+    const rMensual=r/12,nMeses=anos*12;
+    const pmtSinCapital=vf&&nMeses>0?(rMensual===0?vf/nMeses:vf*rMensual/(Math.pow(1+rMensual,nMeses)-1)):null;
+    const capitalUnico=vf&&anos>0?vf/Math.pow(1+r,anos):null;
+    const capInicial=o.capitalInicial||0;
+    const pmtConCapital=vf&&nMeses>0?Math.max(0,F.pmtFV(rMensual,nMeses,vf,capInicial)):null;
+    const deficit=pmtConCapital!==null?pmtConCapital-(o.aportacionActual||0):null;
+    return{vf,pmtSinCapital,capitalUnico,pmtConCapital,deficit,importeHoy};
+  });
+  const totalAportacionNecesaria=computed.reduce((a,c)=>a+(c.pmtConCapital||0),0);
+  const margen=capacidadAhorro-totalAportacionNecesaria;
+  return (
+    <div className="page">
+      <div className="page-title">OBJETIVOS FINANCIEROS — Planificación por Metas</div>
+      <div className="kpi-grid kpi-grid-3" style={{marginBottom:20}}>
+        <div className={`kpi ${margen>=0?'green':'red'}`}><div className="kpi-label">Margen / Déficit Mensual</div><div className={`kpi-value ${F.valClass(margen)}`}>{F.eur(margen)}</div><div className="kpi-sub">Capacidad ahorro − Aportaciones</div></div>
+        <div className="kpi blue"><div className="kpi-label">Aportación Mensual Total Necesaria</div><div className="kpi-value val-neutral">{F.eur(totalAportacionNecesaria)}</div></div>
+        <div className="kpi"><div className="kpi-label">Capacidad de Ahorro</div><div className="kpi-value val-neutral">{F.eur(capacidadAhorro)}</div></div>
+      </div>
+      {margen>=0?<div className="diag diag-ok" style={{marginBottom:16}}>✓ Tu capacidad de ahorro cubre todas las metas. Margen disponible: {F.eur(margen)}/mes.</div>:<div className="diag diag-bad" style={{marginBottom:16}}>⚠ Déficit de {F.eur(Math.abs(margen))}/mes. Revisa prioridades o ajusta importes y plazos.</div>}
+      <div className="section"><div className="section-header">TABLA DE OBJETIVOS</div>
+        <div className="table-scroll"><table>
+          <thead><tr><th style={{textAlign:'left',width:160}}>Objetivo</th><th>Importe Hoy</th><th>Años</th><th>Inflación</th><th>VF</th><th>Rent.</th><th>PMT s/Cap</th><th>Cap.Único</th><th>Cap.Inicial</th><th>PMT c/Cap</th><th>Aport.Actual</th><th>Déficit</th><th>Prior.</th><th>Estado</th><th style={{width:70}}></th></tr></thead>
+          <tbody>
+            {objetivos.map((o,idx)=>{
+              const c=computed[idx];
+              return (<tr key={idx}>
+                <td style={{fontWeight:600,background:o.confirmed?'':'#f0fdf4',color:'var(--navy)'}}>
+                  {o.confirmed?<span>{o.objetivo}</span>:<input className="inp" type="text" value={o.objetivo} autoFocus onChange={e=>updateObj(idx,'objetivo',e.target.value)} style={{width:'100%',minWidth:140,textAlign:'left'}}/>}
+                </td>
+                <td>{idx===0?<span className="computed">{F.eur(c.importeHoy)}</span>:idx===4?<span className="nota">Ver Jub.</span>:o.confirmed?(editingObjetivos?<Stepper value={o.importeHoy||0} step={1000} format={v=>F.eur(v)} onChange={v=>updateObj(idx,'importeHoy',v)}/>:<span className="val-neutral">{F.eur(o.importeHoy)}</span>):<input className="inp" type="number" value={o.importeHoy||''} onChange={e=>updateObj(idx,'importeHoy',e.target.value)} style={{width:80}}/>}</td>
+                <td>{idx===4?<span className="nota">—</span>:o.confirmed?(editingObjetivos?<Stepper value={o.anosPlayzo||0} step={1} min={1} format={v=>v+' a'} onChange={v=>updateObj(idx,'anosPlayzo',v)}/>:<span className="val-neutral">{o.anosPlayzo} a</span>):<input className="inp" type="number" value={o.anosPlayzo||''} onChange={e=>updateObj(idx,'anosPlayzo',e.target.value)} style={{width:55}}/>}</td>
+                <td>{o.confirmed?(editingObjetivos?<Stepper value={o.inflacion} step={0.005} min={0} format={v=>F.pct(v)} onChange={v=>updateObj(idx,'inflacion',v)}/>:<span className="val-neutral">{F.pct(o.inflacion)}</span>):<input className="inp" type="number" step="0.005" value={o.inflacion} onChange={e=>updateObj(idx,'inflacion',e.target.value)} style={{width:55}}/>}</td>
+                <td className="computed">{c.vf?F.eur(c.vf):'—'}</td>
+                <td>{o.confirmed?(editingObjetivos?<Stepper value={o.rentabilidad} step={0.005} min={0} format={v=>F.pct(v)} onChange={v=>updateObj(idx,'rentabilidad',v)}/>:<span className="val-neutral">{F.pct(o.rentabilidad)}</span>):<input className="inp" type="number" step="0.005" value={o.rentabilidad} onChange={e=>updateObj(idx,'rentabilidad',e.target.value)} style={{width:55}}/>}</td>
+                <td className="computed">{c.pmtSinCapital?F.eur(c.pmtSinCapital):'—'}</td>
+                <td className="computed">{c.capitalUnico?F.eur(c.capitalUnico):'—'}</td>
+                <td>{o.confirmed?(editingObjetivos?<Stepper value={o.capitalInicial||0} step={500} format={v=>F.eur(v)} onChange={v=>updateObj(idx,'capitalInicial',v)}/>:<span className="val-neutral">{F.eur(o.capitalInicial)}</span>):<input className="inp" type="number" value={o.capitalInicial||0} onChange={e=>updateObj(idx,'capitalInicial',e.target.value)} style={{width:70}}/>}</td>
+                <td className="computed" style={{fontWeight:600}}>{c.pmtConCapital?F.eur(c.pmtConCapital):'—'}</td>
+                <td>{o.confirmed?(editingObjetivos?<Stepper value={o.aportacionActual||0} step={50} format={v=>F.eur(v)} onChange={v=>updateObj(idx,'aportacionActual',v)}/>:<span className="val-neutral">{F.eur(o.aportacionActual)}</span>):<input className="inp" type="number" value={o.aportacionActual||0} onChange={e=>updateObj(idx,'aportacionActual',e.target.value)} style={{width:70}}/>}</td>
+                <td className={c.deficit!==null?(c.deficit>0?'val-neg':'val-pos'):''}>{c.deficit!==null?F.eur(c.deficit>0?c.deficit:0):'—'}</td>
+                <td>{o.confirmed?(editingObjetivos?<select className="inp" value={o.prioridad} onChange={e=>updateObj(idx,'prioridad',e.target.value)} style={{width:70}}><option>Alta</option><option>Media</option><option>Baja</option></select>:<span className={`badge badge-${o.prioridad.toLowerCase()}`}>{o.prioridad}</span>):<select className="inp" value={o.prioridad} onChange={e=>updateObj(idx,'prioridad',e.target.value)} style={{width:70}}><option>Alta</option><option>Media</option><option>Baja</option></select>}</td>
+                <td>{o.confirmed?(editingObjetivos?<select className="inp" value={o.estado} onChange={e=>updateObj(idx,'estado',e.target.value)} style={{width:80}}><option>Pendiente</option><option>En curso</option><option>Completado</option></select>:<span className={`badge ${o.estado==='En curso'?'badge-curso':o.estado==='Completado'?'badge-ok':'badge-pendiente'}`}>{o.estado}</span>):<select className="inp" value={o.estado} onChange={e=>updateObj(idx,'estado',e.target.value)} style={{width:80}}><option>Pendiente</option><option>En curso</option><option>Completado</option></select>}</td>
+                <td style={{display:'flex',gap:4,alignItems:'center',paddingTop:6}}>
+                  {!o.confirmed&&<button onClick={()=>confirmObj(idx)} style={{background:'var(--green)',color:'white',border:'none',borderRadius:4,cursor:'pointer',fontSize:13,padding:'2px 7px',fontWeight:700}}>✓</button>}
+                  <button onClick={()=>removeObj(idx)} style={{background:'none',border:'none',cursor:'pointer',color:'var(--red)',fontSize:15,lineHeight:1,padding:'2px 4px'}}>✕</button>
+                </td>
+              </tr>);
+            })}
+            <tr><td colSpan={15} style={{padding:'6px 12px'}}><div style={{display:'flex',gap:8,alignItems:'center'}}><button onClick={addObj} style={{background:'var(--blue)',color:'white',border:'none',borderRadius:6,padding:'5px 14px',cursor:'pointer',fontSize:12,fontFamily:'inherit',fontWeight:500}}>+ Añadir objetivo</button><button onClick={()=>setEditingObjetivos(e=>!e)} style={{background:editingObjetivos?'var(--green)':'#64748b',color:'white',border:'none',borderRadius:6,padding:'5px 12px',cursor:'pointer',fontSize:12,fontFamily:'inherit',fontWeight:500}}>{editingObjetivos?'✓ Listo':'✏ Editar'}</button></div></td></tr>
+            <tr className="row-total"><td colSpan={9}>TOTAL APORTACIÓN MENSUAL NECESARIA</td><td style={{fontWeight:700}}>{F.eur(totalAportacionNecesaria)}</td><td></td><td className={margen>=0?'val-pos':'val-neg'}>{F.eur(Math.abs(margen))}</td><td colSpan={3}></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div className="two-col">
+        <div className="section"><div className="section-header">Por Prioridad</div>
+          <div className="bar-chart">{['Alta','Media','Baja'].map(p=>{const total=objetivos.reduce((a,o,i)=>a+(o.prioridad===p&&computed[i].pmtConCapital?computed[i].pmtConCapital:0),0);return(<div className="bar-row" key={p}><div className="bar-lbl"><span className={`badge badge-${p.toLowerCase()}`}>{p}</span></div><div className="bar-track"><div className="bar-fill" style={{width:totalAportacionNecesaria>0?Math.min(100,total/totalAportacionNecesaria*100)+'%':'0%',background:p==='Alta'?'var(--red)':p==='Media'?'var(--amber)':'var(--green)'}}></div></div><div className="bar-val">{F.eur(total)}/m</div></div>);})}</div>
+        </div>
+        <div className="section"><div className="section-header">Diagnóstico Capacidad</div><div style={{padding:16}}><table><tbody>
+          <tr><td>Capacidad de ahorro mensual</td><td className="val-pos">{F.eur(capacidadAhorro)}</td></tr>
+          <tr><td>Total aportaciones necesarias</td><td className="val-neg">−{F.eur(totalAportacionNecesaria)}</td></tr>
+          <tr className="row-total"><td>Margen / Déficit</td><td className={F.valClass(margen)}>{F.eur(margen)}</td></tr>
+        </tbody></table></div></div>
+      </div>
+    </div>
+  );
+};
+
+const Sheet3 = ({ state, setState }) => {
+  const { jub } = state;
+  const j = jub;
+  const set = (field, val) => setState(s => ({ ...s, jub: { ...s.jub, [field]: parseFloat(val) || 0 } }));
+  const anosHastaJub=Math.max(0,j.edadJubilacion-j.edadActual);
+  const anosJubilacion=Math.max(0,j.edadMuerte-j.edadJubilacion);
+  const gastoAnualHoy=j.gastoMensualHoy*12;
+  const gastoAnualVF=gastoAnualHoy*Math.pow(1+j.inflacion,anosHastaJub);
+  const gastoMensualVF=gastoAnualVF/12;
+  const pensionAnualVF=j.pensionPublicaMensualHoy*12*Math.pow(1+j.inflacion,anosHastaJub);
+  const deficitAnual=Math.max(0,gastoAnualVF-pensionAnualVF);
+  const capNecesarioBase=F.pvGrowingAnnuity(deficitAnual,j.rJub,j.inflacion,anosJubilacion);
+  const capNecesarioLongevidad=F.pvGrowingAnnuity(deficitAnual,j.rJub,j.inflacion,anosJubilacion+j.stressLongevidad);
+  const capNecesarioHoy=capNecesarioBase/Math.pow(1+j.rAcc,anosHastaJub);
+  const capInicial=j.capitalInicial*Math.pow(1+j.rAcc,anosHastaJub);
+  const aportAnual0=j.aportacionMensual*12;
+  const fvAportaciones=F.fvGrowingAnnuity(aportAnual0,j.rAcc,j.crecimientoAportaciones,anosHastaJub);
+  const capitalAcumulado=capInicial+fvAportaciones;
+  const cobertura=capNecesarioBase>0?capitalAcumulado/capNecesarioBase:0;
+  const gapBase=capitalAcumulado-capNecesarioBase;
+  const gapLongevidad=capitalAcumulado-capNecesarioLongevidad;
+  const aportNecesariaAnual=capNecesarioBase>0?(F.fvGrowingAnnuity(1,j.rAcc,j.crecimientoAportaciones,anosHastaJub)>0?(capNecesarioBase-capInicial)/F.fvGrowingAnnuity(1,j.rAcc,j.crecimientoAportaciones,anosHastaJub):0):0;
+  const aportNecesariaMensual=aportNecesariaAnual/12;
+  const deficitAportacion=aportNecesariaMensual-j.aportacionMensual;
+  const swrImplicita=capitalAcumulado>0?deficitAnual/capitalAcumulado:0;
+  const swrOk=swrImplicita<=0.035;
+  const capPostShock=capNecesarioBase*(1-j.stressCaida);
+  const redGastoShock=capPostShock<capNecesarioBase?(capNecesarioBase-capPostShock)/capNecesarioBase:0;
+  const currentYear=2026;
+  const rows=[];
+  let capital=j.capitalInicial,aportActual=aportAnual0;
+  for(let i=0;i<(j.edadMuerte-j.edadActual);i++){
+    const edad=j.edadActual+i,anio=currentYear+i;
+    const enJubilacion=edad>=j.edadJubilacion;
+    const fase=enJubilacion?'Decumulación':'Acumulación';
+    const rent=enJubilacion?j.rJub:j.rAcc;
+    const capitalInicio=capital;
+    let flujo;
+    if(!enJubilacion){flujo=aportActual;capital=capital*(1+rent)+aportActual;if(i>0)aportActual*=(1+j.crecimientoAportaciones);}
+    else{const gastoAnio=gastoAnualVF*Math.pow(1+j.inflacion,edad-j.edadJubilacion);const pensionAnio=pensionAnualVF*Math.pow(1+j.inflacion,edad-j.edadJubilacion);flujo=-(gastoAnio-pensionAnio);capital=capital*(1+rent)+flujo;}
+    rows.push({edad,anio,fase,aportacion:enJubilacion?flujo:aportActual,rent,capitalInicio,flujoNeto:flujo,capitalFin:Math.max(0,capital)});
+  }
+  const capitalEdadMuerte=rows[rows.length-1]?.capitalFin||0;
+  const sobrevive=capitalEdadMuerte>0;
+  const anoAgotamiento=rows.find(r=>r.capitalFin<=0)?.anio;
+  const IR=({label,field,step=1,unit=''})=>(<tr><td>{label}</td><td><input className="inp" type="number" step={step} value={jub[field]} onChange={e=>set(field,e.target.value)} style={{width:90}}/>{unit&&<span style={{marginLeft:4,color:'var(--muted)',fontSize:11}}>{unit}</span>}</td></tr>);
+  return (
+    <div className="page">
+      <div className="page-title">PLAN DE JUBILACIÓN — Acumulación, Decumulación, Estrés de Longevidad</div>
+      <div className="two-col">
+        <div className="section"><div className="section-header">PARÁMETROS DE ENTRADA</div><div style={{padding:'0 0 8px'}}><table><tbody>
+          <IR label="Edad actual" field="edadActual" unit="años"/><IR label="Edad objetivo jubilación" field="edadJubilacion" unit="años"/>
+          <tr><td>Años hasta jubilación</td><td className="computed">{anosHastaJub} años</td></tr>
+          <IR label="Años de vida prevista" field="edadMuerte" unit="años"/>
+          <tr><td>Años en jubilación</td><td className="computed">{anosJubilacion} años</td></tr>
+          <IR label="Gasto mensual deseado (€ hoy)" field="gastoMensualHoy" step={100} unit="€/mes"/>
+          <IR label="Inflación anual" field="inflacion" step={0.005}/><IR label="Rentabilidad acumulación" field="rAcc" step={0.005}/><IR label="Rentabilidad decumulación" field="rJub" step={0.005}/>
+          <IR label="Capital inicial (€)" field="capitalInicial" step={1000} unit="€"/><IR label="Aportación mensual (€)" field="aportacionMensual" step={50} unit="€/mes"/>
+          <IR label="Crecimiento aportaciones" field="crecimientoAportaciones" step={0.005}/><IR label="Tasa fiscal rescates" field="tasaFiscalRescate" step={0.01}/>
+          <tr><td>Pensión pública (€/mes hoy) <a href="https://prestaciones.seg-social.es/simulador-servicio/simulador-pension-jubilacion.html" target="_blank" rel="noopener noreferrer" style={{marginLeft:6,fontSize:10,color:'var(--blue)',textDecoration:'none',background:'#eff6ff',padding:'2px 7px',borderRadius:4,fontWeight:600,whiteSpace:'nowrap'}} title="Simulador oficial de la Seguridad Social">🔗 Simular en SS</a></td><td><input className="inp" type="number" step={50} value={jub.pensionPublicaMensualHoy} onChange={e=>set('pensionPublicaMensualHoy',e.target.value)} style={{width:90}}/><span style={{marginLeft:4,color:'var(--muted)',fontSize:11}}>€/mes</span></td></tr>
+          <IR label="Stress: longevidad +años" field="stressLongevidad" unit="años"/><IR label="Stress: caída mercado" field="stressCaida" step={0.05}/>
+        </tbody></table></div></div>
+        <div>
+          <div className="section"><div className="section-header">RESULTADOS BASE</div><table><tbody>
+            <tr><td>Gasto anual hoy</td><td className="val-neutral">{F.eur(gastoAnualHoy)}</td></tr>
+            <tr><td>Gasto anual VF (inicio jub.)</td><td className="val-neutral">{F.eur(gastoAnualVF)}</td></tr>
+            <tr><td>Gasto mensual VF</td><td className="val-neutral">{F.eur(gastoMensualVF)}</td></tr>
+            <tr><td>Pensión anual VF</td><td className="val-neutral">{F.eur(pensionAnualVF)}</td></tr>
+            <tr><td>Déficit anual a cubrir</td><td className="val-neg">{F.eur(deficitAnual)}</td></tr>
+            <tr className="row-subtotal"><td>Capital necesario inicio jub.</td><td className="val-neutral">{F.eur(capNecesarioBase)}</td></tr>
+            <tr><td>Capital necesario +{j.stressLongevidad}a longevidad</td><td className="val-neutral">{F.eur(capNecesarioLongevidad)}</td></tr>
+            <tr><td>Capital necesario HOY</td><td className="val-neutral">{F.eur(capNecesarioHoy)}</td></tr>
+          </tbody></table></div>
+          <div className="section"><div className="section-header">CAPITAL PROYECTADO</div><table><tbody>
+            <tr><td>Capital inicial a r_acc</td><td className="val-neutral">{F.eur(capInicial)}</td></tr>
+            <tr><td>VF aportaciones crecientes</td><td className="val-neutral">{F.eur(fvAportaciones)}</td></tr>
+            <tr className="row-subtotal"><td>Capital acumulado inicio jub.</td><td className="val-pos">{F.eur(capitalAcumulado)}</td></tr>
+            <tr><td>Cobertura</td><td className={cobertura>=1?'val-pos':cobertura>=0.7?'val-warn':'val-neg'}>{F.pct(cobertura)}</td></tr>
+            <tr><td>Gap vs necesidad base</td><td className={F.valClass(gapBase)}>{F.eur(gapBase)}</td></tr>
+            <tr><td>Gap con longevidad</td><td className={F.valClass(gapLongevidad)}>{F.eur(gapLongevidad)}</td></tr>
+          </tbody></table>
+          <div style={{padding:'8px 16px'}}><div className="progress-wrap"><div className="progress-bar" style={{width:Math.min(100,cobertura*100)+'%',background:cobertura>=1?'var(--green)':cobertura>=0.7?'var(--amber)':'var(--red)'}}/></div></div>
+          </div>
+          <div className="section"><div className="section-header">APORTACIÓN REQUERIDA</div><table><tbody>
+            <tr><td>Aportación mensual necesaria</td><td className="val-neutral">{F.eur(aportNecesariaMensual)}</td></tr>
+            <tr><td>Aportación actual</td><td className="val-neutral">{F.eur(j.aportacionMensual)}</td></tr>
+            <tr className="row-subtotal"><td>Déficit aportación</td><td className={F.valClass(-deficitAportacion)}>{F.eur(deficitAportacion)}</td></tr>
+          </tbody></table></div>
+          <div className="section"><div className="section-header">SWR &amp; DIAGNÓSTICO FINAL</div><table><tbody>
+            <tr><td>SWR implícita</td><td className={swrOk?'val-pos':'val-neg'}>{F.pct(swrImplicita)}</td></tr>
+            <tr><td>SWR sostenible (ref. 3.5%)</td><td className="val-neutral">3.5%</td></tr>
+            <tr><td>Capital en edad muerte ({j.edadMuerte}a)</td><td className={capitalEdadMuerte>0?'val-pos':'val-neg'}>{F.eur(capitalEdadMuerte)}</td></tr>
+            <tr><td>¿Cartera sobrevive?</td><td><span className={`badge ${sobrevive?'badge-ok':'badge-warn'}`}>{sobrevive?'✓ SÍ':'✗ NO'}</span></td></tr>
+            <tr><td>Año agotamiento</td><td className="val-neutral">{anoAgotamiento||'—'}</td></tr>
+          </tbody></table></div>
+        </div>
+      </div>
+      <div className="section"><div className="section-header">PROYECCIÓN AÑO A AÑO</div>
+        <div className="table-scroll" style={{maxHeight:400,overflow:'auto'}}><table>
+          <thead><tr><th>Edad</th><th>Año</th><th>Fase</th><th>Aportación/Retiro</th><th>Rentabilidad</th><th>Capital Inicio</th><th>Flujos Netos</th><th>Capital Fin</th></tr></thead>
+          <tbody>{rows.map((r,i)=>(<tr key={i} className={r.edad===j.edadJubilacion?'highlight':''}>
+            <td style={{fontWeight:r.edad===j.edadJubilacion?700:400}}>{r.edad}</td><td>{r.anio}</td>
+            <td><span className={`badge ${r.fase==='Acumulación'?'badge-fijo':'badge-variable'}`}>{r.fase}</span></td>
+            <td className={r.fase==='Acumulación'?'val-pos':'val-neg'}>{F.eur(Math.abs(r.aportacion))}</td>
+            <td className="val-neutral">{F.pct(r.rent)}</td><td className="val-neutral">{F.eur(r.capitalInicio)}</td>
+            <td className={F.valClass(r.flujoNeto)}>{F.eur(r.flujoNeto)}</td>
+            <td className={r.capitalFin<=0?'val-neg':'val-neutral'}>{F.eur(r.capitalFin)}</td>
+          </tr>))}</tbody>
+        </table></div>
+      </div>
+    </div>
+  );
+};
+
+const Sheet4 = ({ state, setState }) => {
+  const { ingresos } = state;
+  const hipotecas = state.hipotecas || [state.hip];
+  const [activeHip, setActiveHip] = useState(0);
+  const totalMensualNeto=ingresos.reduce((a,i)=>a+i.mensualBruto*(1-i.tipoMarginal),0);
+  const setHip=(idx,f,v)=>setState(s=>{const hips=s.hipotecas?[...s.hipotecas]:[{...s.hip}];hips[idx]={...hips[idx],[f]:(f==='nombre'||f==='tipoAmortizacion')?v:(parseFloat(v)||0)};return{...s,hipotecas:hips}});
+  const addHipoteca=()=>setState(s=>{const hips=s.hipotecas?[...s.hipotecas]:[{...s.hip}];hips.push({capitalPendiente:0,tipoInteres:0.035,plazoRestante:20,valorTasacion:0,amortizacionAnticipada:0,tipoAmortizacion:'frances',nombre:`Hipoteca ${hips.length+1}`});setActiveHip(hips.length-1);return{...s,hipotecas:hips}});
+  const removeHipoteca=(idx)=>{if(hipotecas.length<=1)return;setState(s=>{const hips=(s.hipotecas||[{...s.hip}]).filter((_,i)=>i!==idx);return{...s,hipotecas:hips}});setActiveHip(Math.max(0,idx-1))};
+  const h=hipotecas[Math.min(activeHip,hipotecas.length-1)]||hipotecas[0];
+  const hipIdx=Math.min(activeHip,hipotecas.length-1);
+  const tipoAmort=h.tipoAmortizacion||'frances';
+  const rMes=h.tipoInteres/12,nMeses=h.plazoRestante*12;
+  const cuotaMensual=F.cuotaMensualByType(tipoAmort,h.capitalPendiente,h.tipoInteres,h.plazoRestante);
+  // For German: cuota varies — show first (highest) and last (lowest)
+  const cuotaInicial=cuotaMensual;
+  const cuotaFinal=tipoAmort==='aleman'&&nMeses>0?(h.capitalPendiente/nMeses+(h.capitalPendiente/nMeses)*rMes):cuotaMensual;
+  const ltv=h.valorTasacion>0?h.capitalPendiente/h.valorTasacion:0;
+  const totalCuotaMensual=hipotecas.reduce((a,hip)=>a+F.cuotaMensualByType(hip.tipoAmortizacion||'frances',hip.capitalPendiente,hip.tipoInteres,hip.plazoRestante),0);
+  const dsr=totalMensualNeto>0?totalCuotaMensual/totalMensualNeto:0;
+  const totalCapital=hipotecas.reduce((a,hip)=>a+hip.capitalPendiente,0);
+  const totalTasacion=hipotecas.reduce((a,hip)=>a+hip.valorTasacion,0);
+  const ltvTotal=totalTasacion>0?totalCapital/totalTasacion:0;
+  // Shocks: use type-aware cuota; total intereses computed from schedule
+  const shocks=[-100,-50,0,100,200,300].map(bp=>{
+    const r=Math.max(0,h.tipoInteres+bp/10000);
+    const cuota=F.cuotaMensualByType(tipoAmort,h.capitalPendiente,r,h.plazoRestante);
+    const sched=F.amortScheduleByType(tipoAmort,h.capitalPendiente,r,h.plazoRestante);
+    const totalIntereses=sched.reduce((a,row)=>a+row.intereses,0);
+    return{bp,tipo:r,cuota,delta:cuota-cuotaMensual,totalIntereses};
+  });
+  const newCapital=Math.max(0,h.capitalPendiente-h.amortizacionAnticipada);
+  // Opción 1: reducir cuota — recalc cuota with new capital, same plazo, same type
+  const cuotaOpc1=F.cuotaMensualByType(tipoAmort,newCapital,h.tipoInteres,h.plazoRestante);
+  // Opción 2: reducir plazo — only mathematically clean for Francés
+  const nMesesOpc2=tipoAmort==='frances'&&rMes>0&&cuotaMensual>0&&newCapital>0?F.nper(rMes,cuotaMensual,newCapital):0;
+  const anosAhorrados=tipoAmort==='frances'?h.plazoRestante-nMesesOpc2/12:0;
+  const schedBase=F.amortScheduleByType(tipoAmort,h.capitalPendiente,h.tipoInteres,h.plazoRestante);
+  const schedNueva=F.amortScheduleByType(tipoAmort,newCapital,h.tipoInteres,h.plazoRestante);
+  const interesesBase=schedBase.reduce((a,r)=>a+r.intereses,0);
+  const interesesNueva=schedNueva.reduce((a,r)=>a+r.intereses,0);
+  const ahorroInteresesOpc1=interesesBase-interesesNueva;
+  const ahorroTotalIntereses=tipoAmort==='frances'&&nMesesOpc2>0?cuotaMensual*nMeses-h.capitalPendiente-(cuotaMensual*nMesesOpc2-newCapital):0;
+  const schedule=schedBase;
+  const tiposInfo={
+    frances:{nombre:'Francés',desc:'Cuota mensual constante. Es el sistema más utilizado en España. Al inicio se pagan más intereses, al final más capital.'},
+    aleman:{nombre:'Alemán',desc:'Amortización de capital constante. La cuota total es decreciente: alta al principio, baja al final. Pagas menos intereses totales que en Francés.'},
+    americano:{nombre:'Americano (bullet)',desc:'Solo se pagan intereses durante toda la vida del préstamo. El capital se devuelve íntegro al vencimiento. Cuota mensual baja, pero exige liquidez al final.'},
+  };
+  const tipoActual=tiposInfo[tipoAmort];
+  return (
+    <div className="page">
+      <div className="page-title">HIPOTECAS — Amortización, Shocks de Tipo, Prepago, LTV, DSR</div>
+      <div className="kpi-grid kpi-grid-4" style={{marginBottom:16}}>
+        <div className={`kpi ${ltvTotal<=0.8?'green':ltvTotal<=0.9?'amber':'red'}`}><div className="kpi-label">LTV Total</div><div className="kpi-value">{F.pct(ltvTotal)}</div><div className="kpi-sub">{ltvTotal<=0.8?'✓ Saludable':'⚠ Elevado'}</div></div>
+        <div className={`kpi ${dsr<=0.3?'green':dsr<=0.4?'amber':'red'}`}><div className="kpi-label">DSR Total</div><div className="kpi-value">{F.pct(dsr)}</div><div className="kpi-sub">{dsr<=0.3?'✓ Sano ≤30%':dsr<=0.4?'⚠ Vigilar':'✗ Excesivo'}</div></div>
+        <div className="kpi blue"><div className="kpi-label">Cuota Total Mensual</div><div className="kpi-value">{F.eur(totalCuotaMensual)}</div></div>
+        <div className="kpi"><div className="kpi-label">Capital Total Pendiente</div><div className="kpi-value">{F.eur(totalCapital)}</div><div className="kpi-sub">Tasación: {F.eur(totalTasacion)}</div></div>
+      </div>
+      <div style={{display:'flex',gap:8,marginBottom:16,flexWrap:'wrap',alignItems:'center'}}>
+        {hipotecas.map((hip,i)=>(<button key={i} onClick={()=>setActiveHip(i)} style={{padding:'6px 16px',borderRadius:6,cursor:'pointer',fontFamily:'inherit',fontSize:12,fontWeight:600,background:activeHip===i?'var(--navy)':'white',color:activeHip===i?'white':'var(--text)',border:`2px solid ${activeHip===i?'var(--navy)':'var(--border2)'}`}}>{hip.nombre||`Hipoteca ${i+1}`}{hipotecas.length>1&&activeHip===i&&<span onClick={e=>{e.stopPropagation();removeHipoteca(i)}} style={{marginLeft:8,color:'#f87171',fontWeight:700}}>✕</span>}</button>))}
+        <button onClick={addHipoteca} style={{padding:'6px 16px',borderRadius:6,cursor:'pointer',fontFamily:'inherit',fontSize:12,fontWeight:600,background:'var(--blue)',color:'white',border:'none'}}>+ Añadir hipoteca</button>
+      </div>
+      <div style={{marginBottom:16,display:'flex',alignItems:'center',gap:8}}>
+        <span style={{fontSize:12,color:'var(--muted)'}}>Nombre:</span>
+        <input className="inp" type="text" value={h.nombre||`Hipoteca ${hipIdx+1}`} onChange={e=>setHip(hipIdx,'nombre',e.target.value)} style={{width:180,textAlign:'left'}}/>
+      </div>
+      <div className="section" style={{marginBottom:16}}>
+        <div className="section-header">SISTEMA DE AMORTIZACIÓN</div>
+        <div style={{padding:'14px 16px'}}>
+          <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:10}}>
+            {['frances','aleman','americano'].map(t=>(
+              <button key={t} onClick={()=>setHip(hipIdx,'tipoAmortizacion',t)} style={{padding:'7px 16px',borderRadius:6,cursor:'pointer',fontFamily:'inherit',fontSize:12,fontWeight:600,background:tipoAmort===t?'var(--blue)':'white',color:tipoAmort===t?'white':'var(--text)',border:`1.5px solid ${tipoAmort===t?'var(--blue)':'var(--border2)'}`}}>{tiposInfo[t].nombre}</button>
+            ))}
+          </div>
+          <div style={{fontSize:11.5,color:'var(--muted)',lineHeight:1.5,padding:'8px 12px',background:'#f8fafc',borderRadius:6,borderLeft:'3px solid var(--blue)'}}>
+            <strong style={{color:'var(--navy)'}}>{tipoActual.nombre}:</strong> {tipoActual.desc}
+          </div>
+        </div>
+      </div>
+      <div className="two-col">
+        <div>
+          <div className="section"><div className="section-header">DATOS</div><table><tbody>
+            <tr><td>Capital pendiente (€)</td><td><input className="inp" type="number" step={1000} value={h.capitalPendiente} onChange={e=>setHip(hipIdx,'capitalPendiente',e.target.value)} style={{width:110}}/></td></tr>
+            <tr><td>Tipo interés anual (%)</td><td><input className="inp" type="number" step={0.005} value={h.tipoInteres} onChange={e=>setHip(hipIdx,'tipoInteres',e.target.value)} style={{width:110}}/></td></tr>
+            <tr><td>Plazo restante (años)</td><td><input className="inp" type="number" value={h.plazoRestante} onChange={e=>setHip(hipIdx,'plazoRestante',e.target.value)} style={{width:110}}/></td></tr>
+            <tr><td>{tipoAmort==='aleman'?'Cuota mensual inicial':tipoAmort==='americano'?'Cuota mensual (intereses)':'Cuota mensual'}</td><td className="val-neutral">{F.eur(cuotaInicial)}</td></tr>
+            {tipoAmort==='aleman' && <tr><td>Cuota mensual final</td><td className="val-neutral">{F.eur(cuotaFinal)}</td></tr>}
+            {tipoAmort==='americano' && <tr><td>Pago final (capital)</td><td className="val-neg">{F.eur(h.capitalPendiente)}</td></tr>}
+            <tr><td>Total intereses durante vida</td><td className="val-neutral">{F.eur(interesesBase)}</td></tr>
+            <tr><td>Valor tasación (€)</td><td><input className="inp" type="number" step={5000} value={h.valorTasacion} onChange={e=>setHip(hipIdx,'valorTasacion',e.target.value)} style={{width:110}}/></td></tr>
+            <tr className="row-subtotal"><td>LTV actual</td><td className={ltv<=0.8?'val-pos':ltv<=0.9?'val-warn':'val-neg'}>{h.valorTasacion>0?F.pct(ltv):'—'}</td></tr>
+          </tbody></table></div>
+          <div className="section"><div className="section-header">AMORTIZACIÓN ANTICIPADA</div><table><tbody>
+            <tr><td>Importe amortización única (€)</td><td><input className="inp" type="number" step={1000} value={h.amortizacionAnticipada} onChange={e=>setHip(hipIdx,'amortizacionAnticipada',e.target.value)} style={{width:100}}/></td></tr>
+            <tr><td>Nuevo capital pendiente</td><td className="val-neutral">{F.eur(newCapital)}</td></tr>
+            <tr className="row-subtotal"><td colSpan={2} style={{fontWeight:600}}>Opción 1: Reducir cuota</td></tr>
+            <tr><td>Nueva cuota mensual {tipoAmort==='aleman'?'(inicial)':''}</td><td className="val-pos">{F.eur(cuotaOpc1)}</td></tr>
+            <tr><td>Ahorro mensual</td><td className="val-pos">{F.eur(cuotaInicial-cuotaOpc1)}</td></tr>
+            <tr><td>Ahorro total intereses</td><td className="val-pos">{F.eur(ahorroInteresesOpc1)}</td></tr>
+            {tipoAmort==='frances' && <>
+              <tr className="row-subtotal"><td colSpan={2} style={{fontWeight:600}}>Opción 2: Reducir plazo</td></tr>
+              <tr><td>Años ahorrados</td><td className="val-pos">{anosAhorrados>0?F.num(anosAhorrados,1)+' años':'—'}</td></tr>
+              <tr><td>Ahorro total intereses</td><td className="val-pos">{F.eur(ahorroTotalIntereses)}</td></tr>
+            </>}
+            {tipoAmort!=='frances' && <tr><td colSpan={2} className="nota" style={{fontStyle:'italic',padding:'8px 12px'}}>La opción "reducir plazo" se aplica típicamente en sistema francés.</td></tr>}
+          </tbody></table></div>
+        </div>
+        <div>
+          <div className="section"><div className="section-header">SHOCKS DE TIPO DE INTERÉS</div><div className="table-scroll"><table>
+            <thead><tr><th style={{textAlign:'left'}}>Escenario</th><th>Tipo</th><th>Cuota (€)</th><th>Δ Cuota</th><th>Total Intereses</th></tr></thead>
+            <tbody>{shocks.map(s=>(<tr key={s.bp} className={s.bp===0?'shock-base':''}><td style={{fontWeight:s.bp===0?700:400}}>{s.bp===0?'Base':s.bp>0?`+${s.bp} bp`:`${s.bp} bp`}</td><td className="val-neutral">{F.pct(s.tipo,2)}</td><td>{F.eur(s.cuota)}</td><td className={s.delta>0?'val-neg':s.delta<0?'val-pos':''}>{s.bp!==0?(s.delta>0?'+':'')+F.eur(s.delta):'—'}</td><td className="val-neutral">{F.eur(s.totalIntereses)}</td></tr>))}</tbody>
+          </table></div></div>
+          <div className="section"><div className="section-header">CUADRO DE AMORTIZACIÓN</div>
+            <div className="table-scroll" style={{maxHeight:340,overflow:'auto'}}><table className="amort-table">
+              <thead><tr><th style={{textAlign:'left'}}>Año</th><th>Cuota (€)</th><th>Intereses (€)</th><th>Amortización (€)</th><th>Capital Pendiente (€)</th></tr></thead>
+              <tbody>{schedule.map(r=>(<tr key={r.anio}><td>{r.anio}</td><td className="val-neutral">{F.eur(r.cuota)}</td><td style={{color:'var(--red)'}}>{F.eur(r.intereses)}</td><td style={{color:'var(--green)'}}>{F.eur(r.amortizacion)}</td><td className="val-neutral">{F.eur(r.capitalPendiente)}</td></tr>))}</tbody>
+            </table></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Sheet5 = ({ state, setState }) => {
+  const { gastos, ingresos, hip, jub, balance } = state;
+  const hipotecas = state.hipotecas || [hip];
+  const set=(f,v)=>setState(s=>({...s,balance:{...s.balance,[f]:parseFloat(v)||0}}));
+  const totalGastos=gastos.reduce((a,g)=>a+g.mensual,0);
+  const totalAnualNeto=ingresos.reduce((a,i)=>a+i.mensualBruto*12*(1-i.tipoMarginal),0);
+  const totalMensualNeto=totalAnualNeto/12;
+  const ahorroAnual=totalAnualNeto-totalGastos*12;
+  const ahorroMensual=ahorroAnual/12;
+  const tasaAhorro=totalMensualNeto>0?ahorroMensual/totalMensualNeto:0;
+  const totalCuotaMensual=hipotecas.reduce((a,h)=>{const r=h.tipoInteres/12;const n=h.plazoRestante*12;return a+(n>0&&h.capitalPendiente>0?F.pmt(r,n,h.capitalPendiente):0)},0);
+  const totalCapitalHip=hipotecas.reduce((a,h)=>a+h.capitalPendiente,0);
+  const totalTasacionHip=hipotecas.reduce((a,h)=>a+h.valorTasacion,0);
+  const ltv=totalTasacionHip>0?totalCapitalHip/totalTasacionHip:0;
+  const dsr=totalMensualNeto>0?totalCuotaMensual/totalMensualNeto:0;
+  const anosHastaJub=Math.max(0,jub.edadJubilacion-jub.edadActual);
+  const anosJubilacion=Math.max(0,jub.edadMuerte-jub.edadJubilacion);
+  const gastoAnualVF=jub.gastoMensualHoy*12*Math.pow(1+jub.inflacion,anosHastaJub);
+  const pensionAnualVF=jub.pensionPublicaMensualHoy*12*Math.pow(1+jub.inflacion,anosHastaJub);
+  const deficitAnualJub=Math.max(0,gastoAnualVF-pensionAnualVF);
+  const capNecesario=F.pvGrowingAnnuity(deficitAnualJub,jub.rJub,jub.inflacion,anosJubilacion);
+  const fvAportaciones=F.fvGrowingAnnuity(jub.aportacionMensual*12,jub.rAcc,jub.crecimientoAportaciones,anosHastaJub);
+  const capAcumulado=jub.capitalInicial*Math.pow(1+jub.rAcc,anosHastaJub)+fvAportaciones;
+  const coberturaJub=capNecesario>0?capAcumulado/capNecesario:0;
+  const swrImplicita=capAcumulado>0?deficitAnualJub/capAcumulado:0;
+  const activosLiquidos=balance.cuentaCorriente+balance.cuentaAhorro+state.fondoEmergencia;
+  const totalActivos=activosLiquidos+balance.carteraInversion+balance.planPensiones+totalTasacionHip+balance.otrosInmuebles+balance.otrosActivos;
+  const totalPasivos=totalCapitalHip+balance.prestamosPersonales+balance.tarjetaCredito+balance.otrosPasivos;
+  const patrimonioNeto=totalActivos-totalPasivos;
+  const mesesGastos=totalGastos>0?activosLiquidos/totalGastos:0;
+  const deudaPN=patrimonioNeto>0?totalPasivos/patrimonioNeto:0;
+  const proj=[];let pn=patrimonioNeto;
+  for(let i=0;i<20;i++){const anio=2026+i,edad=jub.edadActual+i;const enJub=edad>=jub.edadJubilacion;const fase=enJub?'Jubilación':'Acumulación';const ahorro=totalAnualNeto-totalGastos*12;const rentPct=enJub?jub.rJub:jub.rAcc;pn=pn*(1+rentPct)+ahorro;proj.push({anio,edad,fase,ing:totalAnualNeto,gasto:totalGastos*12,ahorro,rentPct,pn:Math.max(0,pn)})}
+  const IR=({label,field,step=100})=>(<tr><td>{label}</td><td><input className="inp" type="number" step={step} value={balance[field]} onChange={e=>set(field,e.target.value)} style={{width:100}}/></td></tr>);
+  return (
+    <div className="page">
+      <div className="page-title">PANEL FINANCIERO — Visión Consolidada</div>
+      <div className="kpi-grid kpi-grid-5" style={{marginBottom:20}}>
+        <div className={`kpi ${ahorroMensual>=0?'green':'red'}`}><div className="kpi-label">Ahorro Mensual</div><div className="kpi-value">{F.eur(ahorroMensual)}</div><div className="kpi-sub">Tasa: {F.pct(tasaAhorro)}</div></div>
+        <div className="kpi blue"><div className="kpi-label">Patrimonio Neto</div><div className="kpi-value">{F.eur(patrimonioNeto)}</div><div className="kpi-sub">Activos − Pasivos</div></div>
+        <div className={`kpi ${ltv<=0.8?'green':'amber'}`}><div className="kpi-label">LTV Hipoteca</div><div className="kpi-value">{F.pct(ltv)}</div><div className="kpi-sub">DSR: {F.pct(dsr)}</div></div>
+        <div className={`kpi ${coberturaJub>=1?'green':coberturaJub>=0.7?'amber':'red'}`}><div className="kpi-label">Cobertura Jubilación</div><div className="kpi-value">{F.pct(coberturaJub)}</div><div className="kpi-sub">SWR: {F.pct(swrImplicita)}</div></div>
+        <div className="kpi"><div className="kpi-label">Liquidez</div><div className="kpi-value">{F.num(mesesGastos,1)} m</div><div className="kpi-sub">Meses gastos cubiertos</div></div>
+      </div>
+      <div className="two-col">
+        <div>
+          <div className="section"><div className="section-header">CASH FLOW ANUAL</div><table><tbody>
+            <tr><td>Ingresos netos anuales</td><td className="val-pos">{F.eur(totalAnualNeto)}</td></tr>
+            <tr><td>Gastos anuales</td><td className="val-neg">−{F.eur(totalGastos*12)}</td></tr>
+            <tr className="row-subtotal"><td>Ahorro anual</td><td className={F.valClass(ahorroAnual)}>{F.eur(ahorroAnual)}</td></tr>
+            <tr><td>Tasa de ahorro</td><td className={tasaAhorro>=0.2?'val-pos':'val-warn'}>{F.pct(tasaAhorro)}</td></tr>
+          </tbody></table></div>
+          <div className="section"><div className="section-header">BALANCE PATRIMONIAL</div>
+            <div className="sub-label">ACTIVOS</div>
+            <table><tbody>
+              <IR label="Cuenta corriente" field="cuentaCorriente"/><IR label="Cuenta ahorro / depósito" field="cuentaAhorro"/>
+              <tr><td>Fondo de emergencia</td><td className="computed">{F.eur(state.fondoEmergencia)}</td></tr>
+              <IR label="Cartera inversión" field="carteraInversion"/><IR label="Plan pensiones / PPI" field="planPensiones"/>
+              <tr><td>Vivienda(s) tasación</td><td className="computed">{F.eur(totalTasacionHip)}</td></tr>
+              <IR label="Otros inmuebles" field="otrosInmuebles" step={5000}/><IR label="Otros activos" field="otrosActivos"/>
+              <tr className="row-subtotal"><td>TOTAL ACTIVOS</td><td className="val-neutral">{F.eur(totalActivos)}</td></tr>
+            </tbody></table>
+            <div className="sub-label">PASIVOS</div>
+            <table><tbody>
+              <tr><td>Hipoteca(s)</td><td className="computed">{F.eur(totalCapitalHip)}</td></tr>
+              <IR label="Préstamos personales" field="prestamosPersonales"/><IR label="Tarjeta crédito" field="tarjetaCredito"/><IR label="Otros pasivos" field="otrosPasivos"/>
+              <tr className="row-subtotal"><td>TOTAL PASIVOS</td><td className="val-neg">{F.eur(totalPasivos)}</td></tr>
+            </tbody></table>
+            <table><tbody><tr className="row-total"><td>PATRIMONIO NETO</td><td className={F.valClass(patrimonioNeto)}>{F.eur(patrimonioNeto)}</td></tr></tbody></table>
+          </div>
+        </div>
+        <div>
+          <div className="section"><div className="section-header">RATIOS DE PLANIFICACIÓN</div><table><tbody>
+            <tr><td>Tasa de ahorro</td><td><span className={`badge ${tasaAhorro>=0.2?'badge-ok':tasaAhorro>=0.1?'badge-warn':'badge-alta'}`}>{F.pct(tasaAhorro)}</span></td></tr>
+            <tr><td>DSR hipoteca / ingresos</td><td><span className={`badge ${dsr<=0.3?'badge-ok':dsr<=0.4?'badge-warn':'badge-alta'}`}>{F.pct(dsr)}</span></td></tr>
+            <tr><td>LTV hipoteca</td><td><span className={`badge ${ltv<=0.8?'badge-ok':ltv<=0.9?'badge-warn':'badge-alta'}`}>{F.pct(ltv)}</span></td></tr>
+            <tr><td>Liquidez (meses)</td><td><span className={`badge ${mesesGastos>=6?'badge-ok':mesesGastos>=3?'badge-warn':'badge-alta'}`}>{F.num(mesesGastos,1)} meses</span></td></tr>
+            <tr><td>Cobertura jubilación</td><td><span className={`badge ${coberturaJub>=1?'badge-ok':coberturaJub>=0.7?'badge-warn':'badge-alta'}`}>{F.pct(coberturaJub)}</span></td></tr>
+            <tr><td>SWR implícita</td><td><span className={`badge ${swrImplicita<=0.035?'badge-ok':'badge-warn'}`}>{F.pct(swrImplicita)}</span></td></tr>
+            <tr><td>Deuda / Patrimonio neto</td><td><span className={`badge ${deudaPN<=0.5?'badge-ok':deudaPN<=1?'badge-warn':'badge-alta'}`}>{F.num(deudaPN,2)}x</span></td></tr>
+          </tbody></table></div>
+          <div className="section"><div className="section-header">Estructura del Activo</div>
+            <div className="bar-chart">{[{lbl:'Líquido',val:activosLiquidos,color:'var(--blue)'},{lbl:'Inversión',val:balance.carteraInversion+balance.planPensiones,color:'var(--green)'},{lbl:'Inmuebles',val:totalTasacionHip+balance.otrosInmuebles,color:'var(--amber)'},{lbl:'Otros',val:balance.otrosActivos,color:'var(--muted)'}].map(b=>(<div className="bar-row" key={b.lbl}><div className="bar-lbl">{b.lbl}</div><div className="bar-track"><div className="bar-fill" style={{width:totalActivos>0?Math.min(100,b.val/totalActivos*100)+'%':'0%',background:b.color}}>{totalActivos>0&&b.val/totalActivos>0.06?F.pct(b.val/totalActivos):''}</div></div><div className="bar-val">{F.eur(b.val)}</div></div>))}</div>
+          </div>
+        </div>
+      </div>
+      <div className="section"><div className="section-header">PROYECCIÓN PATRIMONIO NETO 20 AÑOS</div>
+        <div className="table-scroll"><table>
+          <thead><tr><th>Año</th><th>Edad</th><th>Fase</th><th>Ingresos Netos</th><th>Gastos</th><th>Ahorro</th><th>Rentabilidad</th><th>Patrimonio Neto</th></tr></thead>
+          <tbody>{proj.map(r=>(<tr key={r.anio} className={r.edad===jub.edadJubilacion?'highlight':''}><td>{r.anio}</td><td>{r.edad}</td><td><span className={`badge ${r.fase==='Acumulación'?'badge-fijo':'badge-variable'}`}>{r.fase}</span></td><td className="val-neutral">{F.eur(r.ing)}</td><td className="val-neutral">{F.eur(r.gasto)}</td><td className={F.valClass(r.ahorro)}>{F.eur(r.ahorro)}</td><td className="val-neutral">{F.pct(r.rentPct)}</td><td className={r.pn>0?'val-pos':'val-neg'}>{F.eur(r.pn)}</td></tr>))}</tbody>
+        </table></div>
+      </div>
+    </div>
+  );
+};
+
+const Sheet6 = ({ state, setState }) => {
+  const { hip, balance, fondoEmergencia, balanceDetalle } = state;
+  const hipotecas = state.hipotecas || [hip];
+  const totalCapitalHip=hipotecas.reduce((a,h)=>a+h.capitalPendiente,0);
+  const totalTasacionHip=hipotecas.reduce((a,h)=>a+h.valorTasacion,0);
+  const bd=balanceDetalle;
+  const set=(f,v)=>setState(s=>({...s,balanceDetalle:{...s.balanceDetalle,[f]:parseFloat(v)||0}}));
+  const setHist=(year,v)=>setState(s=>({...s,balanceDetalle:{...s.balanceDetalle,historicoPN:{...s.balanceDetalle.historicoPN,[year]:parseFloat(v)||0}}}));
+  const assets=[
+    {clase:'Efectivo',concepto:'Cuenta corriente',valor:balance.cuentaCorriente,liquidez:'Alta',notas:'Inmediato',editable:false},
+    {clase:'Efectivo',concepto:'Cuenta ahorro',valor:balance.cuentaAhorro,liquidez:'Alta',notas:'1-2 días',editable:false},
+    {clase:'Efectivo',concepto:'Fondo emergencia',valor:fondoEmergencia,liquidez:'Alta',notas:'Caja separada',editable:false},
+    {clase:'Renta fija',concepto:'Depósitos',valor:bd.depositos,liquidez:'Media',notas:'Vencimiento',editable:true,field:'depositos'},
+    {clase:'Renta fija',concepto:'Bonos / letras',valor:bd.bonosLetras,liquidez:'Media',notas:'Secundario',editable:true,field:'bonosLetras'},
+    {clase:'Renta variable',concepto:'Acciones cotizadas',valor:bd.accionesCotizadas,liquidez:'Alta',notas:'T+2',editable:true,field:'accionesCotizadas'},
+    {clase:'Renta variable',concepto:'Fondos indexados',valor:bd.fondosIndexados,liquidez:'Alta',notas:'T+2/3',editable:true,field:'fondosIndexados'},
+    {clase:'Fondos',concepto:'Fondos mixtos',valor:bd.fondosMixtos,liquidez:'Media',notas:'',editable:true,field:'fondosMixtos'},
+    {clase:'Pensiones',concepto:'Plan de pensiones',valor:balance.planPensiones,liquidez:'Nula',notas:'Bloqueado',editable:false},
+    {clase:'Inmuebles',concepto:'Vivienda(s)',valor:totalTasacionHip,liquidez:'Nula',notas:'Venta larga',editable:false},
+    {clase:'Inmuebles',concepto:'Otros inmuebles',valor:balance.otrosInmuebles,liquidez:'Nula',notas:'',editable:false},
+    {clase:'Otros',concepto:'Participaciones empresa',valor:bd.participacionesEmpresa,liquidez:'Nula',notas:'',editable:true,field:'participacionesEmpresa'},
+    {clase:'Otros',concepto:'Alternativos / arte',valor:bd.alternativosArte,liquidez:'Nula',notas:'',editable:true,field:'alternativosArte'},
+  ];
+  const totalActivos=assets.reduce((a,x)=>a+(x.valor||0),0);
+  const activosAlta=assets.filter(x=>x.liquidez==='Alta').reduce((a,x)=>a+(x.valor||0),0);
+  const activosMedia=assets.filter(x=>x.liquidez==='Media').reduce((a,x)=>a+(x.valor||0),0);
+  const activosNula=assets.filter(x=>x.liquidez==='Nula').reduce((a,x)=>a+(x.valor||0),0);
+  const pctLiquido=totalActivos>0?activosAlta/totalActivos:0;
+  const pasivos=[
+    {tipo:'Hipoteca',concepto:'Vivienda(s)',valor:totalCapitalHip,tipo_int:hipotecas[0]?.tipoInteres||0.035,editable:false},
+    {tipo:'Consumo',concepto:'Préstamo coche',valor:bd.prestamoCoche,tipo_int:0.07,editable:true,field:'prestamoCoche'},
+    {tipo:'Consumo',concepto:'Otros préstamos',valor:bd.otrosPrestamos,tipo_int:0.08,editable:true,field:'otrosPrestamos'},
+    {tipo:'Tarjeta',concepto:'Tarjetas crédito',valor:bd.tarjetas,tipo_int:0.15,editable:true,field:'tarjetas'},
+    {tipo:'Otros',concepto:'Deuda familiar',valor:bd.deudaFamiliar,tipo_int:0,editable:true,field:'deudaFamiliar'},
+  ];
+  const totalPasivos=pasivos.reduce((a,x)=>a+(x.valor||0),0);
+  const patrimonioNeto=totalActivos-totalPasivos;
+  const liqBadge=(l)=>l==='Alta'?'badge-ok':l==='Media'?'badge-warn':'badge-pendiente';
+  const historico=bd.historicoPN;
+  const histYears=[2020,2021,2022,2023,2024,2025,2026,2027,2028,2029];
+  return (
+    <div className="page">
+      <div className="page-title">BALANCE PATRIMONIAL — Detalle, Liquidez e Histórico</div>
+      <div className="kpi-grid kpi-grid-4" style={{marginBottom:20}}>
+        <div className="kpi blue"><div className="kpi-label">Total Activos</div><div className="kpi-value">{F.eur(totalActivos)}</div></div>
+        <div className="kpi red"><div className="kpi-label">Total Pasivos</div><div className="kpi-value">{F.eur(totalPasivos)}</div></div>
+        <div className={`kpi ${patrimonioNeto>=0?'green':'red'}`}><div className="kpi-label">Patrimonio Neto</div><div className="kpi-value">{F.eur(patrimonioNeto)}</div></div>
+        <div className="kpi"><div className="kpi-label">% Activos Líquidos</div><div className="kpi-value">{F.pct(pctLiquido)}</div></div>
+      </div>
+      <div className="two-col">
+        <div>
+          <div className="section"><div className="section-header">ACTIVOS POR CLASE DE LIQUIDEZ</div><div className="table-scroll"><table>
+            <thead><tr><th style={{textAlign:'left'}}>Clase</th><th style={{textAlign:'left'}}>Concepto</th><th>Valor (€)</th><th>Liquidez</th><th style={{textAlign:'left'}}>Notas</th></tr></thead>
+            <tbody>
+              {assets.map((a,i)=>(<tr key={i}><td style={{color:'var(--muted)',fontSize:11}}>{a.clase}</td><td>{a.concepto}</td><td>{a.editable?<input className="inp" type="number" value={a.valor} onChange={e=>set(a.field,e.target.value)} style={{width:90}}/>:<span className="computed">{F.eur(a.valor)}</span>}</td><td><span className={`badge ${liqBadge(a.liquidez)}`}>{a.liquidez}</span></td><td className="nota">{a.notas}</td></tr>))}
+              <tr className="row-total"><td colSpan={2}>TOTAL ACTIVOS</td><td className="val-neutral">{F.eur(totalActivos)}</td><td colSpan={2}></td></tr>
+            </tbody>
+          </table></div></div>
+          <div className="section"><div className="section-header">ANÁLISIS DE LIQUIDEZ</div><table><tbody>
+            <tr><td>Activos liquidez ALTA</td><td className="val-pos">{F.eur(activosAlta)}</td></tr>
+            <tr><td>Activos liquidez MEDIA</td><td className="val-warn">{F.eur(activosMedia)}</td></tr>
+            <tr><td>Activos liquidez NULA</td><td className="val-neutral">{F.eur(activosNula)}</td></tr>
+            <tr className="row-subtotal"><td>% Líquido en total activos</td><td className={pctLiquido>=0.2?'val-pos':'val-warn'}>{F.pct(pctLiquido)}</td></tr>
+          </tbody></table>
+          <div className="bar-chart">{[{lbl:'Alta',val:activosAlta,color:'var(--green)'},{lbl:'Media',val:activosMedia,color:'var(--amber)'},{lbl:'Nula',val:activosNula,color:'var(--muted)'}].map(b=>(<div className="bar-row" key={b.lbl}><div className="bar-lbl">{b.lbl}</div><div className="bar-track"><div className="bar-fill" style={{width:totalActivos>0?Math.min(100,b.val/totalActivos*100)+'%':'0%',background:b.color}}>{totalActivos>0&&b.val/totalActivos>0.05?F.pct(b.val/totalActivos):''}</div></div><div className="bar-val">{F.eur(b.val)}</div></div>))}</div>
+          </div>
+        </div>
+        <div>
+          <div className="section"><div className="section-header">PASIVOS</div><div className="table-scroll"><table>
+            <thead><tr><th style={{textAlign:'left'}}>Tipo</th><th style={{textAlign:'left'}}>Concepto</th><th>Valor (€)</th><th>Tipo Int.</th></tr></thead>
+            <tbody>
+              {pasivos.map((p,i)=>(<tr key={i}><td style={{color:'var(--muted)',fontSize:11}}>{p.tipo}</td><td>{p.concepto}</td><td>{p.editable?<input className="inp" type="number" value={p.valor} onChange={e=>set(p.field,e.target.value)} style={{width:90}}/>:<span className="computed">{F.eur(p.valor)}</span>}</td><td className="val-neutral">{F.pct(p.tipo_int)}</td></tr>))}
+              <tr className="row-total"><td colSpan={2}>TOTAL PASIVOS</td><td className="val-neg">{F.eur(totalPasivos)}</td><td></td></tr>
+              <tr className="row-total"><td colSpan={2}>PATRIMONIO NETO</td><td className={F.valClass(patrimonioNeto)}>{F.eur(patrimonioNeto)}</td><td></td></tr>
+            </tbody>
+          </table></div></div>
+          <div className="section"><div className="section-header">HISTÓRICO PATRIMONIO NETO</div><div className="table-scroll"><table>
+            <thead><tr><th style={{textAlign:'left'}}>Año</th><th>Patrimonio Neto (€)</th><th>Variación</th></tr></thead>
+            <tbody>{histYears.map((y,i)=>{
+              const val=i<6?(historico[y]||0):(i===6?patrimonioNeto:null);
+              const prev=i===0?null:(i<6?(historico[histYears[i-1]]||0):(i===6?(historico[2025]||0):null));
+              const delta=val!==null&&prev!==null?val-prev:null;
+              return(<tr key={y}><td>{y}{i>=6&&<span className="nota"> (proy.)</span>}</td>
+                <td>{i<6?<input className="inp" type="number" value={historico[y]||''} onChange={e=>setHist(y,e.target.value)} style={{width:100}}/>:<span className="computed">{F.eur(val)}</span>}</td>
+                <td className={delta!==null?(delta>=0?'val-pos':'val-neg'):''}>{delta!==null?(delta>=0?'+':'')+F.eur(delta):'—'}</td>
+              </tr>);
+            })}</tbody>
+          </table></div></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Sheet7 = ({ state, setState }) => {
+  const { seguros, gastos, ingresos, hip, balance, fondoEmergencia } = state;
+  const hipotecas = state.hipotecas || [hip];
+  const hipotecaPendiente=hipotecas.reduce((a,h)=>a+h.capitalPendiente,0);
+  const valorTasacionTotal=hipotecas.reduce((a,h)=>a+h.valorTasacion,0);
+  const sg=seguros;
+  const set=(f,v)=>setState(s=>({...s,seguros:{...s.seguros,[f]:typeof v==='boolean'?v:(parseFloat(v)||0)}}));
+  const ingresosNetos=ingresos.reduce((a,i)=>a+i.mensualBruto*12*(1-i.tipoMarginal),0);
+  const gastosFamiliares=gastos.reduce((a,g)=>a+g.mensual,0)*12;
+  const patrimonioLiquido=balance.cuentaCorriente+balance.cuentaAhorro+fondoEmergencia+balance.carteraInversion;
+  const edadAsegurado=sg.edadAsegurado||40;
+  const deudas=hipotecaPendiente+sg.otrosPasivos;
+  const gastosCubrirHijos=gastosFamiliares*sg.anosRestanteDependencia;
+  const gastosEducacion=gastos.filter(g=>g.clase==='Educación').reduce((a,g)=>a+g.mensual*12*Math.min(sg.anosRestanteDependencia,4),0);
+  const totalNecesidades=deudas+gastosCubrirHijos+gastosEducacion+sg.fondoFinal;
+  const capitalRequeridoNecesidades=Math.max(0,totalNecesidades-patrimonioLiquido);
+  const capitalRequeridoIngresos=F.pvAnnuity(sg.tasaDescuento,sg.anosIngresosReemplazar,ingresosNetos);
+  const capitalRecomendado=Math.max(capitalRequeridoNecesidades,capitalRequeridoIngresos);
+  const deficitVida=Math.max(0,capitalRecomendado-sg.capitalVidaContratado);
+  const primaVidaEstimada=capitalRecomendado*0.001;
+  const anosProteger=Math.max(0,67-edadAsegurado);
+  const capitalInvalidez=F.pvAnnuity(sg.tasaDescuento,anosProteger,ingresosNetos);
+  const deficitInvalidez=Math.max(0,capitalInvalidez-sg.capitalInvalidezContratado);
+  const primaSaludTotal=sg.numAseguradosSalud*sg.primaMediaSalud;
+  const valorContinente=valorTasacionTotal*0.6;
+  const capitalHogar=sg.valorContenidoHogar+valorContinente;
+  const primaHogar=capitalHogar*0.003;
+  const primaInvalidez=capitalInvalidez*0.008;
+  const totalAnualSeguros=primaVidaEstimada+primaInvalidez+primaSaludTotal+primaHogar;
+  const pctIngresos=ingresosNetos>0?totalAnualSeguros/ingresosNetos:0;
+  const IR=({label,field,step=1,unit='',boolean:isBool})=>(<tr><td>{label}</td><td>{isBool?<select className="inp" value={sg[field]?'Sí':'No'} onChange={e=>set(field,e.target.value==='Sí')} style={{width:70}}><option>Sí</option><option>No</option></select>:<><input className="inp" type="number" step={step} value={sg[field]} onChange={e=>set(field,e.target.value)} style={{width:100}}/>{unit&&<span style={{marginLeft:4,color:'var(--muted)',fontSize:11}}>{unit}</span>}</>}</td></tr>);
+  return (
+    <div className="page">
+      <div className="page-title">SEGUROS — Cobertura Necesaria vs. Contratada</div>
+      <div className="kpi-grid kpi-grid-4" style={{marginBottom:20}}>
+        <div className={`kpi ${deficitVida<=0?'green':'red'}`}><div className="kpi-label">Déficit Seg. Vida</div><div className="kpi-value">{F.eur(deficitVida)}</div><div className="kpi-sub">Recomendado: {F.eur(capitalRecomendado)}</div></div>
+        <div className={`kpi ${deficitInvalidez<=0?'green':'red'}`}><div className="kpi-label">Déficit Seg. Invalidez</div><div className="kpi-value">{F.eur(deficitInvalidez)}</div><div className="kpi-sub">Necesario: {F.eur(capitalInvalidez)}</div></div>
+        <div className="kpi blue"><div className="kpi-label">Coste Total Anual</div><div className="kpi-value">{F.eur(totalAnualSeguros)}</div><div className="kpi-sub">{F.pct(pctIngresos)} de ingresos</div></div>
+        <div className={`kpi ${pctIngresos<=0.05?'green':'amber'}`}><div className="kpi-label">% sobre Ingresos</div><div className="kpi-value">{F.pct(pctIngresos)}</div><div className="kpi-sub">Ref. saludable &lt; 5%</div></div>
+      </div>
+      <div className="two-col">
+        <div>
+          <div className="section"><div className="section-header">DATOS PERSONALES</div><table><tbody>
+            <IR label="Edad asegurado" field="edadAsegurado" unit="años"/><IR label="Cónyuge depende económicamente" field="conyugeDepende" boolean/>
+            <IR label="Nº hijos dependientes" field="numHijos"/><IR label="Años restantes dependencia" field="anosRestanteDependencia" unit="años"/>
+            <tr><td>Ingresos netos anuales</td><td className="computed">{F.eur(ingresosNetos)}</td></tr>
+            <tr><td>Gastos familiares anuales</td><td className="computed">{F.eur(gastosFamiliares)}</td></tr>
+            <tr><td>Hipoteca pendiente</td><td className="computed">{F.eur(hipotecaPendiente)}</td></tr>
+            <IR label="Otros pasivos (€)" field="otrosPasivos" step={1000}/>
+          </tbody></table></div>
+          <div className="section"><div className="section-header">SEGURO DE VIDA — Método Necesidades</div><table><tbody>
+            <tr><td>Deudas a saldar</td><td className="val-neutral">{F.eur(deudas)}</td></tr>
+            <tr><td>Gastos familiares hasta emancipación</td><td className="val-neutral">{F.eur(gastosCubrirHijos)}</td></tr>
+            <tr><td>Gastos educación pendientes</td><td className="val-neutral">{F.eur(gastosEducacion)}</td></tr>
+            <IR label="Fondo final (€)" field="fondoFinal" step={1000} unit="€"/>
+            <tr className="row-subtotal"><td>TOTAL NECESIDADES</td><td className="val-neutral">{F.eur(totalNecesidades)}</td></tr>
+            <tr><td>Menos: patrimonio líquido</td><td className="val-pos">−{F.eur(patrimonioLiquido)}</td></tr>
+            <tr className="row-total"><td>Capital requerido</td><td className="val-neutral">{F.eur(capitalRequeridoNecesidades)}</td></tr>
+          </tbody></table></div>
+          <div className="section"><div className="section-header">SEGURO DE VIDA — Método Ingresos</div><table><tbody>
+            <IR label="Años de ingresos a reemplazar" field="anosIngresosReemplazar" unit="años"/>
+            <IR label="Tasa de descuento" field="tasaDescuento" step={0.005}/>
+            <tr><td>Capital requerido (VP ingresos)</td><td className="val-neutral">{F.eur(capitalRequeridoIngresos)}</td></tr>
+          </tbody></table></div>
+          <div className="section"><div className="section-header">RESUMEN SEGURO DE VIDA</div><table><tbody>
+            <tr><td>Capital recomendado</td><td className="val-neutral">{F.eur(capitalRecomendado)}</td></tr>
+            <IR label="Capital vida contratado (€)" field="capitalVidaContratado" step={10000}/>
+            <tr className="row-subtotal"><td>Déficit cobertura</td><td className={deficitVida>0?'val-neg':'val-pos'}>{F.eur(deficitVida)}</td></tr>
+            <tr><td>Prima anual estimada</td><td className="val-neutral">{F.eur(primaVidaEstimada)}</td></tr>
+          </tbody></table>
+          {deficitVida>0?<div className="diag diag-bad">⚠ Déficit de cobertura de vida: {F.eur(deficitVida)}.</div>:<div className="diag diag-ok">✓ Cobertura de vida suficiente.</div>}
+          </div>
+        </div>
+        <div>
+          <div className="section"><div className="section-header">SEGURO DE INVALIDEZ</div><table><tbody>
+            <tr><td>Ingresos a proteger al año</td><td className="val-neutral">{F.eur(ingresosNetos)}</td></tr>
+            <tr><td>Años a proteger (hasta jub.)</td><td className="val-neutral">{anosProteger} años</td></tr>
+            <tr><td>Capital recomendado</td><td className="val-neutral">{F.eur(capitalInvalidez)}</td></tr>
+            <IR label="Capital contratado (€)" field="capitalInvalidezContratado" step={10000}/>
+            <tr className="row-subtotal"><td>Déficit</td><td className={deficitInvalidez>0?'val-neg':'val-pos'}>{F.eur(deficitInvalidez)}</td></tr>
+          </tbody></table>
+          {deficitInvalidez>0?<div className="diag diag-bad">⚠ Déficit invalidez: {F.eur(deficitInvalidez)}.</div>:<div className="diag diag-ok">✓ Cobertura invalidez suficiente.</div>}
+          </div>
+          <div className="section"><div className="section-header">SEGURO DE SALUD</div><table><tbody>
+            <IR label="Nº asegurados" field="numAseguradosSalud"/><IR label="Prima media por persona (€/año)" field="primaMediaSalud" step={50} unit="€"/>
+            <tr><td>Prima total anual</td><td className="val-neutral">{F.eur(primaSaludTotal)}</td></tr>
+            <tr><td>Prima mensual</td><td className="val-neutral">{F.eur(primaSaludTotal/12)}</td></tr>
+          </tbody></table></div>
+          <div className="section"><div className="section-header">SEGURO DE HOGAR</div><table><tbody>
+            <IR label="Valor contenido (€)" field="valorContenidoHogar" step={5000} unit="€"/>
+            <tr><td>Valor continente (60% tasación)</td><td className="computed">{F.eur(valorContinente)}</td></tr>
+            <tr><td>Capital asegurado recomendado</td><td className="val-neutral">{F.eur(capitalHogar)}</td></tr>
+            <tr><td>Prima anual estimada (0,3%)</td><td className="val-neutral">{F.eur(primaHogar)}</td></tr>
+          </tbody></table></div>
+          <div className="section"><div className="section-header">RESUMEN COSTES ANUALES</div><table><tbody>
+            <tr><td>Vida</td><td className="val-neutral">{F.eur(primaVidaEstimada)}</td></tr>
+            <tr><td>Invalidez</td><td className="val-neutral">{F.eur(primaInvalidez)}</td></tr>
+            <tr><td>Salud</td><td className="val-neutral">{F.eur(primaSaludTotal)}</td></tr>
+            <tr><td>Hogar</td><td className="val-neutral">{F.eur(primaHogar)}</td></tr>
+            <tr className="row-total"><td>TOTAL ANUAL</td><td className="val-neutral">{F.eur(totalAnualSeguros)}</td></tr>
+            <tr><td>% sobre ingresos netos</td><td className={pctIngresos<=0.05?'val-pos':'val-warn'}>{F.pct(pctIngresos)}</td></tr>
+          </tbody></table>
+          <div className={`diag ${pctIngresos<=0.05?'diag-ok':'diag-warn'}`}>{pctIngresos<=0.05?`✓ Coste total de seguros saludable: ${F.pct(pctIngresos)}.`:`⚠ Coste elevado: ${F.pct(pctIngresos)}. Revisa coberturas.`}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Sheet8 = ({ state, setState }) => {
+  const { invalidez, ingresos, gastos, balance, fondoEmergencia } = state;
+  const inv=invalidez;
+  const set=(f,v)=>setState(s=>({...s,invalidez:{...s.invalidez,[f]:['gradoInvalidez'].includes(f)?v:(parseFloat(v)||0)}}));
+  const salarioPrincipal=ingresos[0]?.mensualBruto||0;
+  const salarioConyugue=ingresos[1]?.mensualBruto||0;
+  const pagasExtra=ingresos[2]?.mensualBruto||0;
+  const dividendos=ingresos[3]?.mensualBruto||0;
+  const rentasAlquiler=ingresos[4]?.mensualBruto||0;
+  const pensionJubPublica=ingresos[5]?.mensualBruto||0;
+  const salarioAfectado=inv.titularAfectado==1?salarioPrincipal:salarioConyugue;
+  const salarioOtro=inv.titularAfectado==1?salarioConyugue:salarioPrincipal;
+  const gradoInfo={'IPP':{pct:0,label:'IPP — Parcial',compatible:'Mantiene profesión habitual'},'IPT':{pct:0.55,label:'IPT — Total',compatible:'Impide profesión habitual'},'IPA':{pct:1.0,label:'IPA — Absoluta',compatible:'Inhabilita toda profesión'},'GI':{pct:1.5,label:'GI — Gran Invalidez',compatible:'Necesita tercera persona'}};
+  const grado=gradoInfo[inv.gradoInvalidez]||gradoInfo['IPT'];
+  const pensionIncapacidad=inv.gradoInvalidez==='IPP'?0:salarioAfectado*grado.pct;
+  const pagaUnicaIPP=inv.gradoInvalidez==='IPP'?salarioAfectado*inv.pagaUnicaIPP:0;
+  const baselineIngresos=[
+    {concepto:'Salario titular afectado',baseline:salarioAfectado,escenario:salarioAfectado*inv.pctSalarioConservado},
+    {concepto:'Salario otro titular',baseline:salarioOtro,escenario:salarioOtro},
+    {concepto:'Pagas extra / variable',baseline:pagasExtra,escenario:pagasExtra*(1-inv.pctPagasExtra)},
+    {concepto:'Dividendos cartera',baseline:dividendos,escenario:dividendos},
+    {concepto:'Rentas alquiler',baseline:rentasAlquiler,escenario:rentasAlquiler},
+    {concepto:'Pensión pública jubilación',baseline:pensionJubPublica,escenario:pensionJubPublica},
+    {concepto:'Pensión pública por incapacidad',baseline:0,escenario:pensionIncapacidad},
+    {concepto:'Seguro privado — renta mensual',baseline:0,escenario:inv.seguroPrivadoRenta},
+  ];
+  const totalIngBaseline=baselineIngresos.reduce((a,x)=>a+x.baseline,0);
+  const totalIngEscenario=baselineIngresos.reduce((a,x)=>a+x.escenario,0);
+  const totalGastosMensual=gastos.reduce((a,g)=>a+g.mensual,0);
+  const adaptacionMensual=inv.duracionEscenario>0?inv.adaptacionVivienda/(inv.duracionEscenario*12):0;
+  const baselineGastos=[
+    {concepto:'Gastos corrientes',baseline:totalGastosMensual,escenario:totalGastosMensual-inv.ahorroGastosLaborales},
+    {concepto:'Gasto médico adicional',baseline:0,escenario:inv.deltaGastoMedico},
+    {concepto:'Cuidador / asistencia',baseline:0,escenario:inv.deltaGastoCuidador},
+    {concepto:'Adaptación vivienda (amort.)',baseline:0,escenario:adaptacionMensual},
+  ];
+  const totalGasBaseline=baselineGastos.reduce((a,x)=>a+x.baseline,0);
+  const totalGasEscenario=baselineGastos.reduce((a,x)=>a+x.escenario,0);
+  const ahorroNetoBaseline=totalIngBaseline-totalGasBaseline;
+  const ahorroNetoEscenario=totalIngEscenario-totalGasEscenario;
+  const deltaMensual=ahorroNetoEscenario-ahorroNetoBaseline;
+  const deltaAnual=deltaMensual*12;
+  const vpPerdida=F.pvAnnuity(inv.tasaDescuento,inv.duracionEscenario,Math.abs(Math.min(0,deltaMensual)*12));
+  const patrimonioLiquido=balance.cuentaCorriente+balance.cuentaAhorro+fondoEmergencia+balance.carteraInversion;
+  const anosAgotando=deltaMensual<0&&patrimonioLiquido>0?patrimonioLiquido/Math.abs(deltaMensual*12):null;
+  const sensibilidad=['IPP','IPT','IPT75','IPA','GI'].map(g=>{
+    const pcts={'IPP':0,'IPT':0.55,'IPT75':0.75,'IPA':1.0,'GI':1.5};
+    const labels={'IPP':'IPP — Parcial','IPT':'IPT — Total 55%','IPT75':'IPT — Total 75%','IPA':'IPA — Absoluta 100%','GI':'GI — Gran Invalidez 150%'};
+    const pensionG=pcts[g]===0?0:salarioAfectado*pcts[g];
+    const ingTotal=totalIngEscenario-pensionIncapacidad+pensionG;
+    const ahorroNeto=ingTotal-totalGasEscenario;
+    const delta=ahorroNeto-ahorroNetoBaseline;
+    const vp=F.pvAnnuity(inv.tasaDescuento,inv.duracionEscenario,Math.abs(Math.min(0,delta)*12));
+    return{grado:labels[g],pension:pensionG,ingTotal,ahorroNeto,delta,vp};
+  });
+  const projRows=[];let pat=patrimonioLiquido;
+  for(let i=0;i<Math.min(inv.horizonteAnalisis,30);i++){const anio=2026+i;const enEscenario=i>=inv.anosDesdeHoy&&i<inv.anosDesdeHoy+inv.duracionEscenario;const flujoAnual=enEscenario?deltaMensual*12:0;pat=pat+flujoAnual;projRows.push({anio,enEscenario,flujoAnual,patrimonioLiquido:Math.max(0,pat)})}
+  return (
+    <div className="page">
+      <div className="page-title">⚠ ANÁLISIS DE RIESGO — INCAPACIDAD LABORAL <span style={{fontSize:12,fontWeight:400,color:'var(--muted)'}}>(Marco SS España)</span></div>
+      <div className="diag diag-info" style={{marginBottom:16}}>Impacto de invalidez sobre ingresos, gastos, ahorro y patrimonio. Grados INSS: IPP · IPT · IPA · GI.</div>
+      <div className="two-col">
+        <div>
+          <div className="section"><div className="section-header">1 · SUPUESTOS DEL ESCENARIO</div><table>
+            <thead><tr><th style={{textAlign:'left'}}>Parámetro</th><th style={{textAlign:'left'}}>Valor</th><th style={{textAlign:'left'}}>Nota</th></tr></thead>
+            <tbody>
+              <tr><td>Titular afectado</td><td><select className="inp" value={inv.titularAfectado} onChange={e=>set('titularAfectado',e.target.value)} style={{width:60}}><option value={1}>1 — Principal</option><option value={2}>2 — Cónyuge</option></select></td><td className="nota">Salario del titular</td></tr>
+              <tr><td>Grado de invalidez</td><td><select className="inp" value={inv.gradoInvalidez} onChange={e=>set('gradoInvalidez',e.target.value)} style={{width:90}}><option>IPP</option><option>IPT</option><option>IPA</option><option>GI</option></select></td><td className="nota">IPP · IPT · IPA · GI</td></tr>
+              <tr><td>Años desde hoy</td><td><input className="inp" type="number" value={inv.anosDesdeHoy} onChange={e=>set('anosDesdeHoy',e.target.value)} style={{width:60}}/></td><td className="nota">0 = este año</td></tr>
+              <tr><td>Duración escenario (años)</td><td><input className="inp" type="number" value={inv.duracionEscenario} onChange={e=>set('duracionEscenario',e.target.value)} style={{width:60}}/></td><td className="nota">Hasta recuperación</td></tr>
+              <tr><td>Base reguladora mensual</td><td className="computed">{F.eur(salarioAfectado)}/mes</td><td className="nota">Salario titular</td></tr>
+              <tr><td>% pensión pública</td><td className="computed">{F.pct(grado.pct)}</td><td className="nota">{grado.compatible}</td></tr>
+              {inv.gradoInvalidez==='IPP'&&<tr><td>Paga única IPP (mensualidades)</td><td><input className="inp" type="number" value={inv.pagaUnicaIPP} onChange={e=>set('pagaUnicaIPP',e.target.value)} style={{width:60}}/></td><td className="nota">Solo IPP</td></tr>}
+              <tr><td>% salario conservado</td><td><input className="inp" type="number" step={0.1} value={inv.pctSalarioConservado} onChange={e=>set('pctSalarioConservado',e.target.value)} style={{width:60}}/></td><td className="nota">IPT: otra profesión</td></tr>
+              <tr><td>% pagas extra perdidas</td><td><input className="inp" type="number" step={0.1} value={inv.pctPagasExtra} onChange={e=>set('pctPagasExtra',e.target.value)} style={{width:60}}/></td><td className="nota">100% típico</td></tr>
+              <tr><td>Seguro privado renta (€/mes)</td><td><input className="inp" type="number" value={inv.seguroPrivadoRenta} onChange={e=>set('seguroPrivadoRenta',e.target.value)} style={{width:80}}/></td><td className="nota">Póliza invalidez</td></tr>
+              <tr><td>Seguro privado capital (€)</td><td><input className="inp" type="number" value={inv.seguroPrivadoCapital} onChange={e=>set('seguroPrivadoCapital',e.target.value)} style={{width:80}}/></td><td className="nota">Lump sum</td></tr>
+              <tr><td>Δ Gasto médico (€/mes)</td><td><input className="inp" type="number" value={inv.deltaGastoMedico} onChange={e=>set('deltaGastoMedico',e.target.value)} style={{width:80}}/></td><td className="nota">Medicación, terapias</td></tr>
+              <tr><td>Δ Gasto cuidador (€/mes)</td><td><input className="inp" type="number" value={inv.deltaGastoCuidador} onChange={e=>set('deltaGastoCuidador',e.target.value)} style={{width:80}}/></td><td className="nota">Obligatorio en GI</td></tr>
+              <tr><td>Adaptación vivienda (€)</td><td><input className="inp" type="number" value={inv.adaptacionVivienda} onChange={e=>set('adaptacionVivienda',e.target.value)} style={{width:80}}/></td><td className="nota">Rampa, baño, vehículo</td></tr>
+              <tr><td>Ahorro gastos laborales (€/mes)</td><td><input className="inp" type="number" value={inv.ahorroGastosLaborales} onChange={e=>set('ahorroGastosLaborales',e.target.value)} style={{width:80}}/></td><td className="nota">Transporte, comidas</td></tr>
+              <tr><td>Tasa de descuento anual</td><td><input className="inp" type="number" step={0.01} value={inv.tasaDescuento} onChange={e=>set('tasaDescuento',e.target.value)} style={{width:70}}/></td><td className="nota">Para VP pérdida</td></tr>
+              <tr><td>Horizonte de análisis (años)</td><td><input className="inp" type="number" value={inv.horizonteAnalisis} onChange={e=>set('horizonteAnalisis',e.target.value)} style={{width:70}}/></td><td className="nota">Tabla proyección</td></tr>
+            </tbody>
+          </table></div>
+          <div className="section"><div className="section-header">2 · MARCO INSS</div><div className="table-scroll"><table>
+            <thead><tr><th style={{textAlign:'left'}}>Grado</th><th>% Base Reg.</th><th style={{textAlign:'left'}}>Capacidad</th><th style={{textAlign:'left'}}>Notas</th></tr></thead>
+            <tbody>{[{g:'IPP — Parcial',pct:'Paga única 24m',cap:'Mantiene profesión habitual',nota:'Disminución ≥33%'},{g:'IPT — Total',pct:'55% (75% si ≥55a.)',cap:'Impide profesión habitual',nota:'Compatible con otra profesión'},{g:'IPA — Absoluta',pct:'100%',cap:'Inhabilita toda profesión',nota:'Exenta IRPF'},{g:'GI — Gran Inv.',pct:'100%+50%',cap:'Necesita tercera persona',nota:'Complemento asistencia'}].map(r=>(<tr key={r.g} className={inv.gradoInvalidez!=='IPP'&&r.g.startsWith(inv.gradoInvalidez)?'highlight':''}><td style={{fontWeight:600}}>{r.g}</td><td>{r.pct}</td><td>{r.cap}</td><td className="nota">{r.nota}</td></tr>))}</tbody>
+          </table></div></div>
+        </div>
+        <div>
+          <div className="section"><div className="section-header">3 · INGRESOS — Baseline vs Escenario</div><div className="table-scroll"><table>
+            <thead><tr><th style={{textAlign:'left'}}>Concepto</th><th>Baseline</th><th>Escenario</th><th>Δ/mes</th><th>Δ anual</th></tr></thead>
+            <tbody>
+              {baselineIngresos.map((r,i)=>{const delta=r.escenario-r.baseline;return(<tr key={i}><td>{r.concepto}</td><td className="val-neutral">{F.eur(r.baseline)}</td><td className="val-neutral">{F.eur(r.escenario)}</td><td className={delta!==0?F.valClass(delta):''}>{delta!==0?F.eur(delta):'—'}</td><td className={delta!==0?F.valClass(delta):''}>{delta!==0?F.eur(delta*12):'—'}</td></tr>)})}
+              <tr className="row-total"><td>TOTAL</td><td className="val-pos">{F.eur(totalIngBaseline)}</td><td className="val-neutral">{F.eur(totalIngEscenario)}</td><td className={F.valClass(totalIngEscenario-totalIngBaseline)}>{F.eur(totalIngEscenario-totalIngBaseline)}</td><td className={F.valClass((totalIngEscenario-totalIngBaseline)*12)}>{F.eur((totalIngEscenario-totalIngBaseline)*12)}</td></tr>
+            </tbody>
+          </table></div></div>
+          <div className="section"><div className="section-header">4 · GASTOS — Baseline vs Escenario</div><div className="table-scroll"><table>
+            <thead><tr><th style={{textAlign:'left'}}>Concepto</th><th>Baseline</th><th>Escenario</th><th>Δ/mes</th></tr></thead>
+            <tbody>
+              {baselineGastos.map((r,i)=>{const delta=r.escenario-r.baseline;return(<tr key={i}><td>{r.concepto}</td><td className="val-neutral">{F.eur(r.baseline)}</td><td className="val-neutral">{F.eur(r.escenario)}</td><td className={delta!==0?F.valClass(-delta):''}>{delta!==0?F.eur(delta):'—'}</td></tr>)})}
+              <tr className="row-total"><td>TOTAL GASTOS</td><td className="val-neg">{F.eur(totalGasBaseline)}</td><td className="val-neg">{F.eur(totalGasEscenario)}</td><td className={F.valClass(-(totalGasEscenario-totalGasBaseline))}>{F.eur(totalGasEscenario-totalGasBaseline)}</td></tr>
+            </tbody>
+          </table></div></div>
+          <div className="section"><div className="section-header">5 · IMPACTO NETO</div><table><tbody>
+            <tr><td>Ahorro neto mensual Baseline</td><td className={F.valClass(ahorroNetoBaseline)}>{F.eur(ahorroNetoBaseline)}</td></tr>
+            <tr><td>Ahorro neto mensual Escenario</td><td className={F.valClass(ahorroNetoEscenario)}>{F.eur(ahorroNetoEscenario)}</td></tr>
+            <tr className="row-subtotal"><td>Δ mensual</td><td className={F.valClass(deltaMensual)}>{F.eur(deltaMensual)}</td></tr>
+            <tr><td>Δ anual</td><td className={F.valClass(deltaAnual)}>{F.eur(deltaAnual)}</td></tr>
+            {inv.gradoInvalidez==='IPP'&&<tr><td>Paga única IPP</td><td className="val-pos">{F.eur(pagaUnicaIPP)}</td></tr>}
+            <tr><td>VP pérdida económica total</td><td className="val-neg">{F.eur(vpPerdida)}</td></tr>
+            <tr><td>Capital seguro recomendado</td><td className="val-neutral">{F.eur(vpPerdida+inv.adaptacionVivienda)}</td></tr>
+            <tr><td>Años agotando patrimonio líquido</td><td className={anosAgotando!==null&&anosAgotando<5?'val-neg':'val-warn'}>{anosAgotando!==null?F.num(anosAgotando,1)+' años':'—'}</td></tr>
+          </tbody></table>
+          {deltaMensual<0?<div className="diag diag-bad">⚠ Déficit mensual de {F.eur(Math.abs(deltaMensual))}. VP pérdida: {F.eur(vpPerdida)}.</div>:<div className="diag diag-ok">✓ En este escenario los ingresos cubren los gastos.</div>}
+          </div>
+          <div className="section"><div className="section-header">6 · SENSIBILIDAD POR GRADO</div><div className="table-scroll"><table>
+            <thead><tr><th style={{textAlign:'left'}}>Grado</th><th>Pensión (€/mes)</th><th>Ingreso total</th><th>Ahorro neto</th><th>Δ vs baseline</th><th>VP pérdida</th></tr></thead>
+            <tbody>{sensibilidad.map(s=>(<tr key={s.grado}><td style={{fontWeight:600,fontSize:11}}>{s.grado}</td><td className="val-neutral">{F.eur(s.pension)}</td><td className="val-neutral">{F.eur(s.ingTotal)}</td><td className={F.valClass(s.ahorroNeto)}>{F.eur(s.ahorroNeto)}</td><td className={F.valClass(s.delta)}>{F.eur(s.delta)}</td><td className="val-neg">{s.vp>0?F.eur(s.vp):'—'}</td></tr>))}</tbody>
+          </table></div></div>
+        </div>
+      </div>
+      <div className="section"><div className="section-header">7 · PROYECCIÓN AÑO A AÑO</div>
+        <div className="table-scroll" style={{maxHeight:320,overflow:'auto'}}><table>
+          <thead><tr><th>Año</th><th>Fase</th><th>Flujo Anual</th><th>Patrimonio Líquido</th></tr></thead>
+          <tbody>{projRows.map(r=>(<tr key={r.anio} className={r.enEscenario?'highlight':''}><td>{r.anio}</td><td><span className={`badge ${r.enEscenario?'badge-alta':'badge-ok'}`}>{r.enEscenario?'Invalidez':'Normal'}</span></td><td className={F.valClass(r.flujoAnual)}>{r.enEscenario?F.eur(r.flujoAnual):'—'}</td><td className={r.patrimonioLiquido<=0?'val-neg':'val-neutral'}>{F.eur(r.patrimonioLiquido)}</td></tr>))}</tbody>
+        </table></div>
+      </div>
+    </div>
+  );
+};
+
+const INITIAL_STATE = {
+  gastos:[
+    {id:1,categoria:'Hipoteca / alquiler',mensual:1200,tipo:'Fijo',clase:'Hipoteca',notas:'',confirmed:true},
+    {id:2,categoria:'Suministros (luz/gas/agua)',mensual:180,tipo:'Variable',clase:'Hogar',notas:'',confirmed:true},
+    {id:3,categoria:'Comunidad / mantenimiento',mensual:80,tipo:'Fijo',clase:'Hogar',notas:'',confirmed:true},
+    {id:4,categoria:'IBI (mensualizado)',mensual:65,tipo:'Fijo',clase:'Impuestos',notas:'',confirmed:true},
+    {id:5,categoria:'Seguro hogar',mensual:35,tipo:'Fijo',clase:'Seguros',notas:'',confirmed:true},
+    {id:6,categoria:'Alimentación',mensual:450,tipo:'Variable',clase:'Hogar',notas:'',confirmed:true},
+    {id:7,categoria:'Transporte',mensual:180,tipo:'Variable',clase:'Transporte',notas:'',confirmed:true},
+    {id:8,categoria:'Seguro coche',mensual:55,tipo:'Fijo',clase:'Seguros',notas:'',confirmed:true},
+    {id:9,categoria:'Educación hijo 1',mensual:500,tipo:'Fijo',clase:'Educación',notas:'',confirmed:true},
+    {id:10,categoria:'Educación hijo 2',mensual:500,tipo:'Fijo',clase:'Educación',notas:'',confirmed:true},
+    {id:11,categoria:'Universidad hijo 1',mensual:1200,tipo:'Fijo',clase:'Educación',notas:'',confirmed:true},
+    {id:12,categoria:'Universidad hijo 2',mensual:1200,tipo:'Fijo',clase:'Educación',notas:'',confirmed:true},
+    {id:13,categoria:'Ropa y personal',mensual:140,tipo:'Variable',clase:'Personal',notas:'',confirmed:true},
+    {id:14,categoria:'Ocio / restauración',mensual:220,tipo:'Variable',clase:'Personal',notas:'',confirmed:true},
+    {id:15,categoria:'Viajes y vacaciones',mensual:200,tipo:'Variable',clase:'Personal',notas:'',confirmed:true},
+    {id:16,categoria:'Salud / sanidad privada',mensual:120,tipo:'Fijo',clase:'Salud',notas:'',confirmed:true},
+    {id:17,categoria:'Móvil / internet',mensual:60,tipo:'Fijo',clase:'Hogar',notas:'',confirmed:true},
+    {id:18,categoria:'Suscripciones',mensual:40,tipo:'Variable',clase:'Personal',notas:'',confirmed:true},
+    {id:19,categoria:'Gimnasio / deporte',mensual:45,tipo:'Variable',clase:'Personal',notas:'',confirmed:true},
+    {id:20,categoria:'Cambio coche (amortizado)',mensual:300,tipo:'Variable',clase:'Transporte',notas:'',confirmed:true},
+    {id:21,categoria:'Seguros vida/invalidez',mensual:50,tipo:'Fijo',clase:'Seguros',notas:'',confirmed:true},
+    {id:22,categoria:'Ayudas familiares',mensual:0,tipo:'Variable',clase:'Personal',notas:'',confirmed:true},
+    {id:23,categoria:'Imprevistos / colchón',mensual:80,tipo:'Variable',clase:'Reserva',notas:'',confirmed:true},
+  ],
+  fondoEmergencia:0,
+  ingresos:[
+    {id:1,fuente:'Salario principal',mensualBruto:4000,tipoFiscal:'Trabajo',tipoMarginal:0.25,notas:'Hasta jubilación',confirmed:true},
+    {id:2,fuente:'Salario cónyuge',mensualBruto:0,tipoFiscal:'Trabajo',tipoMarginal:0.22,notas:'',confirmed:true},
+    {id:3,fuente:'Pagas extra / variable',mensualBruto:250,tipoFiscal:'Trabajo',tipoMarginal:0.30,notas:'',confirmed:true},
+    {id:4,fuente:'Dividendos (cartera)',mensualBruto:0,tipoFiscal:'Ahorro',tipoMarginal:0.21,notas:'',confirmed:true},
+    {id:5,fuente:'Rentas alquiler',mensualBruto:0,tipoFiscal:'Inmobiliario',tipoMarginal:0.24,notas:'',confirmed:true},
+    {id:6,fuente:'Pensión pública (jubilación)',mensualBruto:0,tipoFiscal:'Pensión',tipoMarginal:0.20,notas:'Empieza en jubilación',confirmed:true},
+    {id:7,fuente:'Plan de pensiones / rescate',mensualBruto:0,tipoFiscal:'Pensión',tipoMarginal:0.25,notas:'Rescate en jubilación',confirmed:true},
+    {id:8,fuente:'Otros ingresos',mensualBruto:0,tipoFiscal:'Otros',tipoMarginal:0.25,notas:'',confirmed:true},
+  ],
+  objetivos:[
+    {objetivo:'Fondo emergencia (6 meses gastos)',importeHoy:null,anosPlayzo:1,inflacion:0,rentabilidad:0.02,capitalInicial:0,aportacionActual:0,prioridad:'Alta',estado:'Pendiente',confirmed:true},
+    {objetivo:'Universidad hijo 1',importeHoy:60000,anosPlayzo:15,inflacion:0.04,rentabilidad:0.05,capitalInicial:0,aportacionActual:0,prioridad:'Alta',estado:'Pendiente',confirmed:true},
+    {objetivo:'Universidad hijo 2',importeHoy:60000,anosPlayzo:18,inflacion:0.04,rentabilidad:0.05,capitalInicial:0,aportacionActual:0,prioridad:'Media',estado:'Pendiente',confirmed:true},
+    {objetivo:'Universidad hijo 3',importeHoy:60000,anosPlayzo:21,inflacion:0.04,rentabilidad:0.05,capitalInicial:0,aportacionActual:0,prioridad:'Media',estado:'Pendiente',confirmed:true},
+    {objetivo:'Jubilación (gap)',importeHoy:null,anosPlayzo:null,inflacion:0.025,rentabilidad:0.05,capitalInicial:0,aportacionActual:0,prioridad:'Alta',estado:'En curso',confirmed:true},
+    {objetivo:'Entrada segunda vivienda',importeHoy:80000,anosPlayzo:8,inflacion:0.03,rentabilidad:0.04,capitalInicial:0,aportacionActual:0,prioridad:'Baja',estado:'Pendiente',confirmed:true},
+    {objetivo:'Cambio coche',importeHoy:25000,anosPlayzo:5,inflacion:0.03,rentabilidad:0.02,capitalInicial:0,aportacionActual:0,prioridad:'Baja',estado:'Pendiente',confirmed:true},
+    {objetivo:'Viaje especial',importeHoy:10000,anosPlayzo:10,inflacion:0.025,rentabilidad:0.03,capitalInicial:0,aportacionActual:0,prioridad:'Baja',estado:'Pendiente',confirmed:true},
+    {objetivo:'Herencia / legado',importeHoy:100000,anosPlayzo:30,inflacion:0.025,rentabilidad:0.05,capitalInicial:0,aportacionActual:0,prioridad:'Media',estado:'Pendiente',confirmed:true},
+  ],
+  jub:{edadActual:40,edadJubilacion:67,edadMuerte:90,gastoMensualHoy:3500,inflacion:0.025,rAcc:0.05,rJub:0.03,capitalInicial:0,aportacionMensual:200,crecimientoAportaciones:0.025,tasaFiscalRescate:0.21,pensionPublicaMensualHoy:1100,edadInicioPension:67,stressLongevidad:5,stressCaida:0.25},
+  hip:{capitalPendiente:180000,tipoInteres:0.035,plazoRestante:25,valorTasacion:280000,amortizacionAnticipada:20000,tipoAmortizacion:'frances'},
+  hipotecas:[{nombre:'Hipoteca 1',capitalPendiente:180000,tipoInteres:0.035,plazoRestante:25,valorTasacion:280000,amortizacionAnticipada:20000,tipoAmortizacion:'frances'}],
+  balance:{cuentaCorriente:5000,cuentaAhorro:10000,fondoEmergencia:0,carteraInversion:0,planPensiones:0,otrosInmuebles:0,otrosActivos:0,prestamosPersonales:0,tarjetaCredito:0,otrosPasivos:0},
+  balanceDetalle:{depositos:0,bonosLetras:0,accionesCotizadas:0,fondosIndexados:0,fondosMixtos:0,participacionesEmpresa:0,alternativosArte:0,prestamoCoche:0,otrosPrestamos:0,tarjetas:0,deudaFamiliar:0,historicoPN:{2020:0,2021:0,2022:0,2023:0,2024:0,2025:0}},
+  seguros:{edadAsegurado:40,conyugeDepende:true,numHijos:2,anosRestanteDependencia:18,otrosPasivos:0,fondoFinal:15000,anosIngresosReemplazar:15,tasaDescuento:0.03,capitalVidaContratado:0,capitalInvalidezContratado:0,numAseguradosSalud:4,primaMediaSalud:900,valorContenidoHogar:60000},
+  invalidez:{titularAfectado:1,gradoInvalidez:'IPT',anosDesdeHoy:3,duracionEscenario:20,pagaUnicaIPP:24,pctSalarioConservado:0,pctPagasExtra:1,seguroPrivadoRenta:0,seguroPrivadoCapital:0,deltaGastoMedico:300,deltaGastoCuidador:0,adaptacionVivienda:0,ahorroGastosLaborales:150,tasaDescuento:0.04,horizonteAnalisis:20},
+};
+
+const TABS=[
+  {id:'sheet1',label:'1. Gastos e Ingresos'},{id:'sheet2',label:'2. Objetivos'},
+  {id:'sheet3',label:'3. Jubilación'},{id:'sheet4',label:'4. Hipotecas'},
+  {id:'sheet5',label:'5. Panel Financiero'},{id:'sheet6',label:'6. Balance Patrimonial'},
+  {id:'sheet7',label:'7. Seguros'},{id:'sheet8',label:'8. Riesgo Invalidez'},
+];
+
+// ===== ADVISOR HOME (cuando se abre sin token) =====
+const AdvisorHome = ({ onUseDemo }) => {
+  const [clients, setClients] = useState(()=>CLIENT.getClientList());
+  const [showNew, setShowNew] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [filter, setFilter] = useState('all'); // 'all' | 'active' | 'completed'
+  const [copiedField, setCopiedField] = useState(null); // {token, field}
+
+  const createClient = async () => {
+    const name = newName.trim();
+    if (!name) return;
+    setCreating(true);
+    const token = CLIENT.generateToken();
+    const pin = CLIENT.generatePin();
+    const pinHash = await CLIENT.hashPin(pin);
+    const link = CLIENT.buildLink(token, name, pinHash);
+    const entry = { token, name, link, pin, pinHash, createdAt: Date.now(), status: 'active' };
+    const next = [entry, ...clients];
+    setClients(next);
+    CLIENT.saveClientList(next);
+    setNewName(''); setShowNew(false); setCreating(false);
+    // Auto-copy link
+    try { await navigator.clipboard.writeText(link); setCopiedField({token, field:'link'}); setTimeout(()=>setCopiedField(null), 2500); } catch {}
+  };
+
+  const regenerate = async (token) => {
+    if (!confirm('¿Renovar el link y PIN de este cliente?\n\nEl link y PIN actuales dejarán de funcionar. El cliente perderá los datos que ya hubiera introducido.')) return;
+    const client = clients.find(c=>c.token===token);
+    if (!client) return;
+    const newToken = CLIENT.generateToken();
+    const newPin = CLIENT.generatePin();
+    const newPinHash = await CLIENT.hashPin(newPin);
+    const newLink = CLIENT.buildLink(newToken, client.name, newPinHash);
+    const next = clients.map(c => c.token===token
+      ? {...c, token:newToken, pin:newPin, pinHash:newPinHash, link:newLink, status:'active', regeneratedAt:Date.now()}
+      : c);
+    setClients(next);
+    CLIENT.saveClientList(next);
+    try { localStorage.removeItem(`pf_state_${token}`); } catch {}
+  };
+
+  const markCompleted = (token) => {
+    const next = clients.map(c => c.token===token ? {...c, status: c.status==='completed'?'active':'completed'} : c);
+    setClients(next);
+    CLIENT.saveClientList(next);
+  };
+
+  const removeClient = (token) => {
+    if (!confirm('¿Eliminar este cliente de tu lista? El link dejará de funcionar.')) return;
+    const next = clients.filter(c=>c.token!==token);
+    setClients(next);
+    CLIENT.saveClientList(next);
+    try { localStorage.removeItem(`pf_state_${token}`); } catch {}
+    try { localStorage.removeItem(`pf_unlocked_${token}`); } catch {}
+    try { localStorage.removeItem(`pf_attempts_${token}`); } catch {}
+  };
+
+  const copyText = async (text, token, field) => {
+    try { await navigator.clipboard.writeText(text); setCopiedField({token, field}); setTimeout(()=>setCopiedField(null), 2000); }
+    catch { alert('No se pudo copiar. Selecciónalo manualmente:\n\n' + text); }
+  };
+
+  const visibleClients = clients.filter(c => filter==='all' ? true : (c.status||'active')===filter);
+  const counts = {
+    all: clients.length,
+    active: clients.filter(c => (c.status||'active')==='active').length,
+    completed: clients.filter(c => c.status==='completed').length,
+  };
+
+  return (
+    <div className="auth-wrap">
+      <div className="auth-card" style={{maxWidth:680}}>
+        <div className="auth-logo">💼 Plan<span>Financiero</span></div>
+        <div className="auth-sub">Panel del asesor — gestión de clientes</div>
+
+        <div style={{background:'#eff6ff',border:'1px solid #bfdbfe',borderRadius:8,padding:'12px 14px',fontSize:12,color:'var(--text)',lineHeight:1.55,marginBottom:18}}>
+          <strong>¿Cómo funciona?</strong><br/>
+          1. Crea un cliente nuevo. Se genera un <strong>link único</strong> + un <strong>PIN de 4 dígitos</strong>.<br/>
+          2. Envía el link por un canal (email) y el PIN por otro (WhatsApp, SMS, llamada).<br/>
+          3. El cliente abre el link, introduce el PIN, rellena su plan, y pulsa "Enviar a mi asesor".<br/>
+          4. Recibes el resumen completo en {ADVISOR_EMAIL}.
+        </div>
+
+        {!showNew ? (
+          <button className="auth-btn primary" onClick={()=>setShowNew(true)}>+ Crear nuevo cliente</button>
+        ) : (
+          <div style={{background:'#f0fdf4',border:'1px solid #bbf7d0',borderRadius:8,padding:14,marginBottom:14}}>
+            <div className="auth-label">Nombre del cliente</div>
+            <input className="auth-input" type="text" autoFocus value={newName} onChange={e=>setNewName(e.target.value)}
+              placeholder="Ej. Juan García" onKeyDown={e=>e.key==='Enter'&&!creating&&createClient()}/>
+            <div style={{display:'flex',gap:8,marginTop:10}}>
+              <button className="modal-btn" onClick={()=>{setShowNew(false);setNewName('')}} style={{flex:1}} disabled={creating}>Cancelar</button>
+              <button className="modal-btn success" onClick={createClient} style={{flex:2}} disabled={creating}>{creating?'⏳ Generando...':'Generar link + PIN'}</button>
+            </div>
+          </div>
+        )}
+
+        {clients.length > 0 && (
+          <div style={{marginTop:18}}>
+            <div style={{display:'flex',gap:6,marginBottom:10}}>
+              {[
+                {id:'all', label:`Todos (${counts.all})`},
+                {id:'active', label:`Activos (${counts.active})`},
+                {id:'completed', label:`Recibidos (${counts.completed})`},
+              ].map(f=>(
+                <button key={f.id} onClick={()=>setFilter(f.id)} style={{padding:'5px 10px',fontSize:11,fontFamily:'inherit',fontWeight:600,border:'1px solid var(--border2)',background:filter===f.id?'var(--navy)':'white',color:filter===f.id?'white':'var(--muted)',borderRadius:6,cursor:'pointer'}}>{f.label}</button>
+              ))}
+            </div>
+            <div style={{maxHeight:340,overflowY:'auto',border:'1px solid var(--border)',borderRadius:8}}>
+              {visibleClients.length === 0 && <div style={{padding:20,textAlign:'center',color:'var(--muted)',fontSize:12}}>No hay clientes en este filtro.</div>}
+              {visibleClients.map(c=>{
+                const status = c.status || 'active';
+                const isActive = status === 'active';
+                return (
+                  <div key={c.token} style={{padding:'12px 14px',borderBottom:'1px solid var(--border)',background:isActive?'white':'#f8fafc'}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:6}}>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{fontWeight:600,fontSize:13,color:'var(--navy)'}}>{c.name}</div>
+                        <div style={{fontSize:10,color:'var(--muted)'}}>Creado {new Date(c.createdAt).toLocaleDateString('es-ES')}</div>
+                      </div>
+                      <span className={`badge ${isActive?'badge-curso':'badge-ok'}`}>{isActive?'⏳ Activo':'✓ Recibido'}</span>
+                    </div>
+                    <div style={{display:'grid',gridTemplateColumns:'auto 1fr auto',gap:6,alignItems:'center',marginBottom:4,fontSize:11}}>
+                      <span style={{color:'var(--muted)',fontWeight:600}}>PIN:</span>
+                      <span style={{fontFamily:'DM Mono,monospace',fontSize:16,fontWeight:700,letterSpacing:4,color:'var(--navy)',background:'#fef3c7',padding:'2px 10px',borderRadius:4,display:'inline-block',justifySelf:'start'}}>{c.pin}</span>
+                      <button onClick={()=>copyText(c.pin, c.token, 'pin')} style={{background:copiedField?.token===c.token&&copiedField?.field==='pin'?'var(--green)':'var(--blue)',color:'white',border:'none',borderRadius:4,padding:'3px 8px',cursor:'pointer',fontSize:10,fontFamily:'inherit',fontWeight:600,whiteSpace:'nowrap'}}>{copiedField?.token===c.token&&copiedField?.field==='pin'?'✓':'📋 PIN'}</button>
+                    </div>
+                    <div style={{display:'grid',gridTemplateColumns:'auto 1fr auto',gap:6,alignItems:'center',fontSize:11}}>
+                      <span style={{color:'var(--muted)',fontWeight:600}}>Link:</span>
+                      <span style={{fontFamily:'DM Mono,monospace',fontSize:10,color:'var(--muted)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{c.link}</span>
+                      <button onClick={()=>copyText(c.link, c.token, 'link')} style={{background:copiedField?.token===c.token&&copiedField?.field==='link'?'var(--green)':'var(--blue)',color:'white',border:'none',borderRadius:4,padding:'3px 8px',cursor:'pointer',fontSize:10,fontFamily:'inherit',fontWeight:600,whiteSpace:'nowrap'}}>{copiedField?.token===c.token&&copiedField?.field==='link'?'✓':'📋 Link'}</button>
+                    </div>
+                    <div style={{display:'flex',gap:6,marginTop:8,flexWrap:'wrap'}}>
+                      <button onClick={()=>markCompleted(c.token)} style={{background:status==='completed'?'#fef3c7':'#f0fdf4',color:status==='completed'?'#92400e':'#166534',border:'1px solid '+(status==='completed'?'#fde68a':'#bbf7d0'),borderRadius:5,padding:'3px 8px',cursor:'pointer',fontSize:10,fontFamily:'inherit',fontWeight:600}}>{status==='completed'?'↩ Reabrir':'✓ Marcar recibido'}</button>
+                      <button onClick={()=>regenerate(c.token)} style={{background:'#fffbeb',color:'#92400e',border:'1px solid #fde68a',borderRadius:5,padding:'3px 8px',cursor:'pointer',fontSize:10,fontFamily:'inherit',fontWeight:600}}>🔄 Renovar</button>
+                      <button onClick={()=>window.open(c.link,'_blank')} style={{background:'#f1f5f9',color:'var(--text)',border:'1px solid var(--border2)',borderRadius:5,padding:'3px 8px',cursor:'pointer',fontSize:10,fontFamily:'inherit'}}>↗ Abrir</button>
+                      <button onClick={()=>removeClient(c.token)} style={{background:'#fef2f2',color:'var(--red)',border:'1px solid #fecaca',borderRadius:5,padding:'3px 8px',cursor:'pointer',fontSize:10,fontFamily:'inherit',fontWeight:600,marginLeft:'auto'}}>✕ Eliminar</button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        <div style={{marginTop:18,paddingTop:14,borderTop:'1px solid var(--border)',display:'flex',gap:8}}>
+          <button className="modal-btn" onClick={onUseDemo} style={{flex:1}}>🧪 Probar planificador (modo demo)</button>
+        </div>
+
+        <div className="auth-disclaimer">
+          ✓ <strong>Envío directo activo</strong> vía Formsubmit. La primera vez que un cliente envíe, recibirás un email de confirmación de Formsubmit en {ADVISOR_EMAIL} — pulsa "Confirm email" UNA SOLA VEZ y a partir de entonces todos los envíos llegan automáticamente.
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ===== PIN GATE (cliente debe introducir PIN antes de acceder) =====
+const PinGate = ({ token, name, expectedHash, onUnlock }) => {
+  const [pin, setPin] = useState('');
+  const [error, setError] = useState('');
+  const [checking, setChecking] = useState(false);
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(()=>{ const t = setInterval(()=>setNow(Date.now()), 1000); return ()=>clearInterval(t); }, []);
+
+  const attempts = CLIENT.getAttempts(token);
+  const recentFails = attempts.filter(t => now - t < 5*60_000);
+  const isLocked = recentFails.length >= 5;
+  const lockoutEnd = isLocked ? Math.max(...recentFails) + 5*60_000 : 0;
+  const secsLeft = isLocked ? Math.max(0, Math.ceil((lockoutEnd - now)/1000)) : 0;
+
+  const submit = async () => {
+    setError('');
+    if (isLocked && secsLeft > 0) return;
+    if (!/^\d{4}$/.test(pin)) { setError('Introduce los 4 dígitos del PIN.'); return; }
+    setChecking(true);
+    const enteredHash = await CLIENT.hashPin(pin);
+    setChecking(false);
+    if (enteredHash === expectedHash) {
+      CLIENT.setUnlocked(token);
+      onUnlock();
+    } else {
+      CLIENT.addAttempt(token);
+      setNow(Date.now());
+      setPin('');
+      const remaining = 5 - (recentFails.length + 1);
+      setError(remaining > 0 ? `PIN incorrecto. Te quedan ${remaining} intento${remaining===1?'':'s'}.` : 'Demasiados intentos. Espera 5 minutos.');
+    }
+  };
+
+  return (
+    <div className="auth-wrap">
+      <div className="auth-card">
+        <div className="auth-logo">💼 Plan<span>Financiero</span></div>
+        <div className="auth-sub">Acceso seguro — sesión de <strong style={{color:'var(--navy)'}}>{name}</strong></div>
+
+        <div style={{background:'#eff6ff',border:'1px solid #bfdbfe',borderRadius:8,padding:'12px 14px',fontSize:12,color:'var(--text)',lineHeight:1.55,marginBottom:18}}>
+          🔒 Para acceder a tu plan financiero, introduce el <strong>PIN de 4 dígitos</strong> que tu asesor te ha enviado por separado (WhatsApp, SMS, llamada...).
+        </div>
+
+        {error && <div className="auth-error">{error}</div>}
+        {isLocked && secsLeft > 0 && <div className="auth-error">🔒 Bloqueado por seguridad. Intenta de nuevo en {Math.floor(secsLeft/60)}:{String(secsLeft%60).padStart(2,'0')}.</div>}
+
+        <div className="auth-field">
+          <label className="auth-label">PIN</label>
+          <input className="auth-input" type="text" inputMode="numeric" pattern="[0-9]*" maxLength={4}
+            value={pin} autoFocus disabled={isLocked&&secsLeft>0}
+            onChange={e=>setPin(e.target.value.replace(/\D/g,'').slice(0,4))}
+            onKeyDown={e=>e.key==='Enter'&&!checking&&submit()}
+            style={{textAlign:'center',fontSize:24,letterSpacing:8,fontWeight:700,padding:'12px'}}
+            placeholder="••••"/>
+        </div>
+
+        <button className="auth-btn primary" onClick={submit} disabled={checking||(isLocked&&secsLeft>0)}>
+          {checking ? '⏳ Verificando...' : 'Acceder'}
+        </button>
+
+        <div className="auth-disclaimer">
+          ⚠ Si has recibido este link por error o no recuerdas haber solicitado un plan financiero, ciérralo y avisa a la persona que te lo envió.
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ===== SEND TO ADVISOR =====
+const buildAdvisorReport = (clientId, state, clientName) => {
+  const { gastos, ingresos, fondoEmergencia, jub, hipotecas, balance, balanceDetalle, seguros, invalidez, objetivos } = state;
+  
+  // Helper functions for formatting
+  const fmt = n => new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',minimumFractionDigits:0,maximumFractionDigits:0}).format(n||0);
+  const pct = n => ((n||0)*100).toFixed(1)+'%';
+  const fecha = new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'});
+  
+  const line = (char='═', len=80) => char.repeat(len);
+  const pad = (text, width, align='left') => {
+    const s = String(text);
+    if (s.length >= width) return s.slice(0, width);
+    const spaces = ' '.repeat(width - s.length);
+    return align === 'right' ? spaces + s : align === 'center' ? ' '.repeat(Math.floor((width-s.length)/2)) + s + ' '.repeat(Math.ceil((width-s.length)/2)) : s + spaces;
+  };
+  
+  // ========== HOJA 1: GASTOS E INGRESOS ==========
+  const totalGastos = gastos.reduce((a,g)=>a+g.mensual,0);
+  const totalIngBruto = ingresos.reduce((a,i)=>a+i.mensualBruto,0);
+  const totalIngNeto = ingresos.reduce((a,i)=>a+i.mensualBruto*(1-i.tipoMarginal),0);
+  const ahorroMensual = totalIngNeto - totalGastos;
+  const tasaAhorro = totalIngNeto>0 ? ahorroMensual/totalIngNeto : 0;
+  const gastosFijos = gastos.filter(g=>g.tipo==='Fijo').reduce((a,g)=>a+g.mensual,0);
+  const gastosVariables = gastos.filter(g=>g.tipo==='Variable').reduce((a,g)=>a+g.mensual,0);
+  const coberturaFondo = gastosFijos>0 ? fondoEmergencia/(gastosFijos*6) : 0;
+
+  let hoja1 = `
+┌${line('─',78)}┐
+│${pad('📊 HOJA 1: GASTOS E INGRESOS HOY', 78, 'center')}│
+└${line('─',78)}┘
+
+ ╔═══════════════════════════════════════════════════════════════════════════╗
+ ║  KPIs PRINCIPALES                                                         ║
+ ╠═══════════════════════════════════════════════════════════════════════════╣
+ ║  💰 Superávit/Déficit Mensual:     ${pad(fmt(ahorroMensual), 15, 'right')}                    ║
+ ║  📈 Tasa de Ahorro:                ${pad(pct(tasaAhorro), 15, 'right')}                    ║
+ ║  💵 Ingresos Netos Mensuales:      ${pad(fmt(totalIngNeto), 15, 'right')}                    ║
+ ║  💸 Total Gastos Mensuales:        ${pad(fmt(totalGastos), 15, 'right')}                    ║
+ ╚═══════════════════════════════════════════════════════════════════════════╝
+
+ RESUMEN DE GASTOS:
+ ┌────────────────────────────────────────────────────────────────┐
+ │  Gastos Fijos (mensual):           ${pad(fmt(gastosFijos), 15, 'right')}         │
+ │  Gastos Variables (mensual):       ${pad(fmt(gastosVariables), 15, 'right')}         │
+ │  ──────────────────────────────────────────────────────────    │
+ │  TOTAL GASTOS (mensual):           ${pad(fmt(totalGastos), 15, 'right')}         │
+ │  TOTAL GASTOS (anual):             ${pad(fmt(totalGastos*12), 15, 'right')}         │
+ └────────────────────────────────────────────────────────────────┘
+
+ RESUMEN DE INGRESOS:
+ ┌────────────────────────────────────────────────────────────────┐`;
+
+  ingresos.slice(0,6).forEach(i => {
+    if (i.mensualBruto > 0) {
+      hoja1 += `\n │  ${pad(i.fuente.slice(0,35), 35)}: ${pad(fmt(i.mensualBruto), 12, 'right')} (${pct(i.tipoMarginal)})│`;
+    }
+  });
+
+  hoja1 += `
+ │  ──────────────────────────────────────────────────────────    │
+ │  TOTAL NETO (mensual):             ${pad(fmt(totalIngNeto), 15, 'right')}         │
+ │  TOTAL NETO (anual):               ${pad(fmt(totalIngNeto*12), 15, 'right')}         │
+ └────────────────────────────────────────────────────────────────┘
+
+ FONDO DE EMERGENCIA:
+ ┌────────────────────────────────────────────────────────────────┐
+ │  Objetivo 6 meses (gastos fijos):  ${pad(fmt(gastosFijos*6), 15, 'right')}         │
+ │  Fondo actual:                     ${pad(fmt(fondoEmergencia), 15, 'right')}         │
+ │  % Cobertura:                      ${pad(pct(coberturaFondo), 15, 'right')}         │
+ └────────────────────────────────────────────────────────────────┘\n`;
+
+  // ========== HOJA 2: OBJETIVOS ==========
+  const aportacionTotalNecesaria = objetivos.reduce((acc, o, i) => {
+    if (i === 4) return acc; // Skip jubilación
+    const anos = o.anosPlayzo || 0;
+    const r = o.rentabilidad || 0;
+    const inf = o.inflacion || 0;
+    const importeHoy = i === 0 ? gastosFijos*6 : o.importeHoy || 0;
+    const vf = importeHoy * Math.pow(1+inf, anos);
+    const rMensual = r/12;
+    const nMeses = anos*12;
+    const pmtNecesaria = vf && nMeses>0 ? F.pmtFV(rMensual, nMeses, vf, o.capitalInicial||0) : 0;
+    return acc + pmtNecesaria;
+  }, 0);
+  const margenObjetivos = ahorroMensual - aportacionTotalNecesaria;
+
+  let hoja2 = `
+┌${line('─',78)}┐
+│${pad('🎯 HOJA 2: OBJETIVOS FINANCIEROS', 78, 'center')}│
+└${line('─',78)}┘
+
+ ╔═══════════════════════════════════════════════════════════════════════════╗
+ ║  KPIs PRINCIPALES                                                         ║
+ ╠═══════════════════════════════════════════════════════════════════════════╣
+ ║  💰 Margen/Déficit Mensual:        ${pad(fmt(margenObjetivos), 15, 'right')}                    ║
+ ║  📊 Aportación Total Necesaria:    ${pad(fmt(aportacionTotalNecesaria), 15, 'right')}                    ║
+ ║  💵 Capacidad de Ahorro:           ${pad(fmt(ahorroMensual), 15, 'right')}                    ║
+ ╚═══════════════════════════════════════════════════════════════════════════╝
+
+ OBJETIVOS PRINCIPALES:\n`;
+
+  objetivos.slice(0,8).forEach((o, i) => {
+    if (i === 4) return; // Skip jubilación
+    const anos = o.anosPlayzo || 0;
+    const importeHoy = i === 0 ? gastosFijos*6 : o.importeHoy || 0;
+    const vf = importeHoy * Math.pow(1+o.inflacion||0, anos);
+    const rMensual = (o.rentabilidad||0)/12;
+    const nMeses = anos*12;
+    const pmtNecesaria = vf && nMeses>0 ? F.pmtFV(rMensual, nMeses, vf, o.capitalInicial||0) : 0;
+    hoja2 += ` ┌${'─'.repeat(76)}┐\n`;
+    hoja2 += ` │ ${pad(o.objetivo.slice(0,40), 40)} │ ${pad(o.prioridad, 8)} │ ${pad(o.estado, 12)} │\n`;
+    hoja2 += ` │ Importe hoy: ${pad(fmt(importeHoy), 12, 'right')} │ VF: ${pad(fmt(vf), 12, 'right')} │ PMT: ${pad(fmt(pmtNecesaria), 10, 'right')} │\n`;
+    hoja2 += ` └${'─'.repeat(76)}┘\n`;
+  });
+
+  // ========== HOJA 3: JUBILACIÓN ==========
+  const anosHastaJub = Math.max(0, jub.edadJubilacion - jub.edadActual);
+  const anosJubilacion = Math.max(0, jub.edadMuerte - jub.edadJubilacion);
+  const gastoAnualVF = jub.gastoMensualHoy * 12 * Math.pow(1+jub.inflacion, anosHastaJub);
+  const pensionAnualVF = jub.pensionPublicaMensualHoy * 12 * Math.pow(1+jub.inflacion, anosHastaJub);
+  const deficitAnualJub = Math.max(0, gastoAnualVF - pensionAnualVF);
+  const capNecesario = F.pvGrowingAnnuity(deficitAnualJub, jub.rJub, jub.inflacion, anosJubilacion);
+  const capInicial = jub.capitalInicial * Math.pow(1+jub.rAcc, anosHastaJub);
+  const fvAportaciones = F.fvGrowingAnnuity(jub.aportacionMensual*12, jub.rAcc, jub.crecimientoAportaciones, anosHastaJub);
+  const capAcumulado = capInicial + fvAportaciones;
+  const coberturaJub = capNecesario > 0 ? capAcumulado / capNecesario : 0;
+  const swrImplicita = capAcumulado > 0 ? deficitAnualJub / capAcumulado : 0;
+
+  const hoja3 = `
+┌${line('─',78)}┐
+│${pad('🏖️ HOJA 3: PLAN DE JUBILACIÓN', 78, 'center')}│
+└${line('─',78)}┘
+
+ ╔═══════════════════════════════════════════════════════════════════════════╗
+ ║  KPIs PRINCIPALES                                                         ║
+ ╠═══════════════════════════════════════════════════════════════════════════╣
+ ║  📊 Cobertura Jubilación:          ${pad(pct(coberturaJub), 15, 'right')}                    ║
+ ║  📈 SWR Implícita:                 ${pad(pct(swrImplicita), 15, 'right')}                    ║
+ ║  💰 Capital Acumulado:             ${pad(fmt(capAcumulado), 15, 'right')}                    ║
+ ║  🎯 Capital Necesario:             ${pad(fmt(capNecesario), 15, 'right')}                    ║
+ ╚═══════════════════════════════════════════════════════════════════════════╝
+
+ PARÁMETROS:
+ ┌────────────────────────────────────────────────────────────────┐
+ │  Edad actual / objetivo:           ${pad(jub.edadActual+'a', 6)} / ${pad(jub.edadJubilacion+'a', 6)}     │
+ │  Años hasta jubilación:            ${pad(anosHastaJub+' años', 15, 'right')}         │
+ │  Años en jubilación:               ${pad(anosJubilacion+' años', 15, 'right')}         │
+ │  Gasto mensual deseado (hoy):      ${pad(fmt(jub.gastoMensualHoy), 15, 'right')}         │
+ │  Pensión pública (€/mes hoy):      ${pad(fmt(jub.pensionPublicaMensualHoy), 15, 'right')}         │
+ │  Aportación mensual actual:        ${pad(fmt(jub.aportacionMensual), 15, 'right')}         │
+ └────────────────────────────────────────────────────────────────┘
+
+ PROYECCIÓN A JUBILACIÓN:
+ ┌────────────────────────────────────────────────────────────────┐
+ │  Gasto anual VF (inicio jub.):     ${pad(fmt(gastoAnualVF), 15, 'right')}         │
+ │  Pensión anual VF:                 ${pad(fmt(pensionAnualVF), 15, 'right')}         │
+ │  Déficit anual a cubrir:           ${pad(fmt(deficitAnualJub), 15, 'right')}         │
+ │  Capital inicial proyectado:       ${pad(fmt(capInicial), 15, 'right')}         │
+ │  VF aportaciones:                  ${pad(fmt(fvAportaciones), 15, 'right')}         │
+ └────────────────────────────────────────────────────────────────┘`;
+
+  // ========== HOJA 4: HIPOTECAS ==========
+  const totalCapitalHip = hipotecas.reduce((a,h)=>a+h.capitalPendiente,0);
+  const totalTasacionHip = hipotecas.reduce((a,h)=>a+h.valorTasacion,0);
+  const totalCuotaHip = hipotecas.reduce((a,h)=>a+F.cuotaMensualByType(h.tipoAmortizacion||'frances', h.capitalPendiente, h.tipoInteres, h.plazoRestante), 0);
+  const ltvTotal = totalTasacionHip > 0 ? totalCapitalHip / totalTasacionHip : 0;
+  const dsr = totalIngNeto > 0 ? totalCuotaHip / totalIngNeto : 0;
+
+  let hoja4 = `
+┌${line('─',78)}┐
+│${pad('🏠 HOJA 4: HIPOTECAS', 78, 'center')}│
+└${line('─',78)}┘
+
+ ╔═══════════════════════════════════════════════════════════════════════════╗
+ ║  KPIs PRINCIPALES                                                         ║
+ ╠═══════════════════════════════════════════════════════════════════════════╣
+ ║  📊 LTV Total:                     ${pad(pct(ltvTotal), 15, 'right')}                    ║
+ ║  📈 DSR (Debt Service Ratio):      ${pad(pct(dsr), 15, 'right')}                    ║
+ ║  💰 Cuota Total Mensual:           ${pad(fmt(totalCuotaHip), 15, 'right')}                    ║
+ ║  🏠 Capital Total Pendiente:       ${pad(fmt(totalCapitalHip), 15, 'right')}                    ║
+ ╚═══════════════════════════════════════════════════════════════════════════╝
+
+ DETALLE POR HIPOTECA:\n`;
+
+  hipotecas.slice(0,3).forEach((h, i) => {
+    if (h.capitalPendiente > 0) {
+      const cuota = F.cuotaMensualByType(h.tipoAmortizacion||'frances', h.capitalPendiente, h.tipoInteres, h.plazoRestante);
+      const ltv = h.valorTasacion > 0 ? h.capitalPendiente / h.valorTasacion : 0;
+      const tipo = h.tipoAmortizacion || 'frances';
+      hoja4 += ` ┌${'─'.repeat(76)}┐\n`;
+      hoja4 += ` │ ${pad((h.nombre||'Hipoteca '+(i+1)).slice(0,35), 35)} │ Tipo: ${pad(tipo, 10)} │\n`;
+      hoja4 += ` │ Capital: ${pad(fmt(h.capitalPendiente), 12, 'right')} │ LTV: ${pad(pct(ltv), 8, 'right')} │ Cuota: ${pad(fmt(cuota), 10, 'right')} │\n`;
+      hoja4 += ` │ Tipo interés: ${pad(pct(h.tipoInteres), 8, 'right')} │ Plazo: ${pad(h.plazoRestante+' años', 12)} │\n`;
+      hoja4 += ` └${'─'.repeat(76)}┘\n`;
+    }
+  });
+
+  // ========== HOJA 5: PANEL FINANCIERO ==========
+  const activosLiquidos = balance.cuentaCorriente + balance.cuentaAhorro + fondoEmergencia;
+  const totalActivos = activosLiquidos + balance.carteraInversion + balance.planPensiones + totalTasacionHip + balance.otrosInmuebles + balance.otrosActivos;
+  const totalPasivos = totalCapitalHip + balance.prestamosPersonales + balance.tarjetaCredito + balance.otrosPasivos;
+  const patrimonioNeto = totalActivos - totalPasivos;
+  const mesesGastos = totalGastos > 0 ? activosLiquidos / totalGastos : 0;
+
+  const hoja5 = `
+┌${line('─',78)}┐
+│${pad('📈 HOJA 5: PANEL FINANCIERO CONSOLIDADO', 78, 'center')}│
+└${line('─',78)}┘
+
+ ╔═══════════════════════════════════════════════════════════════════════════╗
+ ║  KPIs PRINCIPALES                                                         ║
+ ╠═══════════════════════════════════════════════════════════════════════════╣
+ ║  💰 Ahorro Mensual:                ${pad(fmt(ahorroMensual), 15, 'right')}                    ║
+ ║  🏛️ Patrimonio Neto:               ${pad(fmt(patrimonioNeto), 15, 'right')}                    ║
+ ║  🏠 LTV Hipoteca:                  ${pad(pct(ltvTotal), 15, 'right')}                    ║
+ ║  🎯 Cobertura Jubilación:          ${pad(pct(coberturaJub), 15, 'right')}                    ║
+ ║  💧 Liquidez:                      ${pad(mesesGastos.toFixed(1)+' meses', 15, 'right')}                    ║
+ ╚═══════════════════════════════════════════════════════════════════════════╝
+
+ BALANCE PATRIMONIAL:
+ ┌────────────────────────────────────────────────────────────────┐
+ │  ACTIVOS:                                                      │
+ │    Activos líquidos:               ${pad(fmt(activosLiquidos), 15, 'right')}         │
+ │    Cartera inversión:              ${pad(fmt(balance.carteraInversion), 15, 'right')}         │
+ │    Plan pensiones:                 ${pad(fmt(balance.planPensiones), 15, 'right')}         │
+ │    Vivienda(s):                    ${pad(fmt(totalTasacionHip), 15, 'right')}         │
+ │    Otros activos:                  ${pad(fmt(balance.otrosInmuebles + balance.otrosActivos), 15, 'right')}         │
+ │    ──────────────────────────────────────────────────────────  │
+ │    TOTAL ACTIVOS:                  ${pad(fmt(totalActivos), 15, 'right')}         │
+ │                                                                │
+ │  PASIVOS:                                                      │
+ │    Hipoteca(s):                    ${pad(fmt(totalCapitalHip), 15, 'right')}         │
+ │    Otros pasivos:                  ${pad(fmt(totalPasivos - totalCapitalHip), 15, 'right')}         │
+ │    ──────────────────────────────────────────────────────────  │
+ │    TOTAL PASIVOS:                  ${pad(fmt(totalPasivos), 15, 'right')}         │
+ │                                                                │
+ │  PATRIMONIO NETO:                  ${pad(fmt(patrimonioNeto), 15, 'right')}         │
+ └────────────────────────────────────────────────────────────────┘`;
+
+  // ========== HOJA 6: BALANCE PATRIMONIAL DETALLADO ==========
+  const activosAlta = activosLiquidos + (balanceDetalle.accionesCotizadas||0) + (balanceDetalle.fondosIndexados||0);
+  const activosMedia = (balanceDetalle.depositos||0) + (balanceDetalle.bonosLetras||0) + (balanceDetalle.fondosMixtos||0);
+  const activosNula = balance.planPensiones + totalTasacionHip + balance.otrosInmuebles + (balanceDetalle.participacionesEmpresa||0) + (balanceDetalle.alternativosArte||0);
+  const pctLiquido = totalActivos > 0 ? activosAlta / totalActivos : 0;
+
+  const hoja6 = `
+┌${line('─',78)}┐
+│${pad('🏛️ HOJA 6: BALANCE PATRIMONIAL DETALLADO', 78, 'center')}│
+└${line('─',78)}┘
+
+ ╔═══════════════════════════════════════════════════════════════════════════╗
+ ║  ANÁLISIS DE LIQUIDEZ                                                     ║
+ ╠═══════════════════════════════════════════════════════════════════════════╣
+ ║  📊 % Activos Líquidos:            ${pad(pct(pctLiquido), 15, 'right')}                    ║
+ ║  🏛️ Total Activos:                 ${pad(fmt(totalActivos), 15, 'right')}                    ║
+ ║  🔴 Total Pasivos:                 ${pad(fmt(totalPasivos), 15, 'right')}                    ║
+ ║  💰 Patrimonio Neto:               ${pad(fmt(patrimonioNeto), 15, 'right')}                    ║
+ ╚═══════════════════════════════════════════════════════════════════════════╝
+
+ ACTIVOS POR LIQUIDEZ:
+ ┌────────────────────────────────────────────────────────────────┐
+ │  ALTA (disponible T+0/T+2):                                   │
+ │    Cuentas corrientes/ahorro:      ${pad(fmt(balance.cuentaCorriente + balance.cuentaAhorro), 15, 'right')}         │
+ │    Fondo emergencia:               ${pad(fmt(fondoEmergencia), 15, 'right')}         │
+ │    Acciones cotizadas:             ${pad(fmt(balanceDetalle.accionesCotizadas||0), 15, 'right')}         │
+ │    Fondos indexados:               ${pad(fmt(balanceDetalle.fondosIndexados||0), 15, 'right')}         │
+ │    Subtotal ALTA:                  ${pad(fmt(activosAlta), 15, 'right')}         │
+ │                                                                │
+ │  MEDIA (semanas/meses):                                        │
+ │    Depósitos:                      ${pad(fmt(balanceDetalle.depositos||0), 15, 'right')}         │
+ │    Bonos/letras:                   ${pad(fmt(balanceDetalle.bonosLetras||0), 15, 'right')}         │
+ │    Fondos mixtos:                  ${pad(fmt(balanceDetalle.fondosMixtos||0), 15, 'right')}         │
+ │    Subtotal MEDIA:                 ${pad(fmt(activosMedia), 15, 'right')}         │
+ │                                                                │
+ │  NULA (años o nunca):                                          │
+ │    Plan pensiones:                 ${pad(fmt(balance.planPensiones), 15, 'right')}         │
+ │    Inmuebles:                      ${pad(fmt(totalTasacionHip + balance.otrosInmuebles), 15, 'right')}         │
+ │    Participaciones empresa:        ${pad(fmt(balanceDetalle.participacionesEmpresa||0), 15, 'right')}         │
+ │    Subtotal NULA:                  ${pad(fmt(activosNula), 15, 'right')}         │
+ └────────────────────────────────────────────────────────────────┘`;
+
+  // ========== HOJA 7: SEGUROS ==========
+  const salarioPrincipal = ingresos[0]?.mensualBruto || 0;
+  const capitalRequeridoVida = (totalCapitalHip + seguros.otrosPasivos + totalGastos*12*seguros.anosRestanteDependencia + seguros.fondoFinal) - (balance.cuentaCorriente + balance.cuentaAhorro + fondoEmergencia + balance.carteraInversion);
+  const capitalRequeridoInvalidez = F.pvAnnuity(seguros.tasaDescuento, Math.max(0, 67-seguros.edadAsegurado), totalIngNeto*12);
+  const deficitVida = Math.max(0, Math.max(capitalRequeridoVida, F.pvAnnuity(seguros.tasaDescuento, seguros.anosIngresosReemplazar, totalIngNeto*12)) - seguros.capitalVidaContratado);
+  const deficitInvalidez = Math.max(0, capitalRequeridoInvalidez - seguros.capitalInvalidezContratado);
+
+  const hoja7 = `
+┌${line('─',78)}┐
+│${pad('🛡️ HOJA 7: ANÁLISIS DE SEGUROS', 78, 'center')}│
+└${line('─',78)}┘
+
+ ╔═══════════════════════════════════════════════════════════════════════════╗
+ ║  DÉFICITS DE COBERTURA                                                    ║
+ ╠═══════════════════════════════════════════════════════════════════════════╣
+ ║  💀 Déficit Seguro Vida:          ${pad(fmt(deficitVida), 15, 'right')}                    ║
+ ║  ♿ Déficit Seguro Invalidez:      ${pad(fmt(deficitInvalidez), 15, 'right')}                    ║
+ ║  👨‍👩‍👧‍👦 Coste Total Anual (est.):      ${pad(fmt((deficitVida + deficitInvalidez)*0.01 + seguros.numAseguradosSalud*seguros.primaMediaSalud), 15, 'right')}                    ║
+ ╚═══════════════════════════════════════════════════════════════════════════╝
+
+ DATOS FAMILIARES:
+ ┌────────────────────────────────────────────────────────────────┐
+ │  Edad asegurado:                   ${pad(seguros.edadAsegurado+' años', 15, 'right')}         │
+ │  Nº hijos dependientes:            ${pad(seguros.numHijos.toString(), 15, 'right')}         │
+ │  Años restantes dependencia:       ${pad(seguros.anosRestanteDependencia+' años', 15, 'right')}         │
+ │  Ingresos netos anuales:           ${pad(fmt(totalIngNeto*12), 15, 'right')}         │
+ └────────────────────────────────────────────────────────────────┘
+
+ COBERTURAS ACTUALES vs RECOMENDADAS:
+ ┌────────────────────────────────────────────────────────────────┐
+ │  VIDA:                                                         │
+ │    Capital contratado:             ${pad(fmt(seguros.capitalVidaContratado), 15, 'right')}         │
+ │    Capital recomendado:            ${pad(fmt(Math.max(capitalRequeridoVida, F.pvAnnuity(seguros.tasaDescuento, seguros.anosIngresosReemplazar, totalIngNeto*12))), 15, 'right')}         │
+ │    Déficit:                        ${pad(fmt(deficitVida), 15, 'right')}         │
+ │                                                                │
+ │  INVALIDEZ:                                                    │
+ │    Capital contratado:             ${pad(fmt(seguros.capitalInvalidezContratado), 15, 'right')}         │
+ │    Capital recomendado:            ${pad(fmt(capitalRequeridoInvalidez), 15, 'right')}         │
+ │    Déficit:                        ${pad(fmt(deficitInvalidez), 15, 'right')}         │
+ │                                                                │
+ │  SALUD:                                                        │
+ │    Nº asegurados:                  ${pad(seguros.numAseguradosSalud.toString(), 15, 'right')}         │
+ │    Prima anual total:              ${pad(fmt(seguros.numAseguradosSalud*seguros.primaMediaSalud), 15, 'right')}         │
+ └────────────────────────────────────────────────────────────────┘`;
+
+  // ========== HOJA 8: RIESGO INVALIDEZ ==========
+  const salarioAfectado = invalidez.titularAfectado === 1 ? salarioPrincipal : (ingresos[1]?.mensualBruto || 0);
+  const gradosInfo = {'IPP': 0, 'IPT': 0.55, 'IPA': 1.0, 'GI': 1.5};
+  const pensionIncapacidad = invalidez.gradoInvalidez === 'IPP' ? 0 : salarioAfectado * (gradosInfo[invalidez.gradoInvalidez] || 0.55);
+  const ingresosEscenario = totalIngNeto + pensionIncapacidad + invalidez.seguroPrivadoRenta - totalGastos + invalidez.ahorroGastosLaborales;
+  const gastosSobrecostes = invalidez.deltaGastoMedico + invalidez.deltaGastoCuidador;
+  const flujoMensualNeto = ingresosEscenario - gastosSobrecostes;
+  const impactoAnual = flujoMensualNeto * 12;
+  const vpPerdida = impactoAnual < 0 ? F.pvAnnuity(invalidez.tasaDescuento, invalidez.duracionEscenario, Math.abs(impactoAnual)) : 0;
+
+  const hoja8 = `
+┌${line('─',78)}┐
+│${pad('⚠️ HOJA 8: ANÁLISIS DE RIESGO — INCAPACIDAD LABORAL', 78, 'center')}│
+└${line('─',78)}┘
+
+ ╔═══════════════════════════════════════════════════════════════════════════╗
+ ║  IMPACTO FINANCIERO                                                       ║
+ ╠═══════════════════════════════════════════════════════════════════════════╣
+ ║  ⚡ Flujo Mensual Neto:           ${pad(fmt(flujoMensualNeto), 15, 'right')}                    ║
+ ║  📅 Impacto Anual:                ${pad(fmt(impactoAnual), 15, 'right')}                    ║
+ ║  💰 VP Pérdida Económica Total:   ${pad(fmt(vpPerdida), 15, 'right')}                    ║
+ ╚═══════════════════════════════════════════════════════════════════════════╝
+
+ ESCENARIO SIMULADO:
+ ┌────────────────────────────────────────────────────────────────┐
+ │  Titular afectado:                 ${pad(invalidez.titularAfectado === 1 ? 'Principal' : 'Cónyuge', 15, 'right')}         │
+ │  Grado invalidez:                  ${pad(invalidez.gradoInvalidez, 15, 'right')}         │
+ │  Salario base afectado:            ${pad(fmt(salarioAfectado), 15, 'right')}         │
+ │  Pensión INSS (mensual):           ${pad(fmt(pensionIncapacidad), 15, 'right')}         │
+ │  Duración escenario:               ${pad(invalidez.duracionEscenario+' años', 15, 'right')}         │
+ │  Años desde hoy:                   ${pad(invalidez.anosDesdeHoy+' años', 15, 'right')}         │
+ └────────────────────────────────────────────────────────────────┘
+
+ AJUSTES DE INGRESOS Y GASTOS:
+ ┌────────────────────────────────────────────────────────────────┐
+ │  Ahorro gastos laborales:          ${pad(fmt(invalidez.ahorroGastosLaborales), 15, 'right')}         │
+ │  Δ Gastos médicos:                 ${pad(fmt(invalidez.deltaGastoMedico), 15, 'right')}         │
+ │  Δ Gastos cuidador:                ${pad(fmt(invalidez.deltaGastoCuidador), 15, 'right')}         │
+ │  Seguro privado renta:             ${pad(fmt(invalidez.seguroPrivadoRenta), 15, 'right')}         │
+ │  Adaptación vivienda (total):      ${pad(fmt(invalidez.adaptacionVivienda), 15, 'right')}         │
+ └────────────────────────────────────────────────────────────────┘
+
+ RECOMENDACIONES:
+ ┌────────────────────────────────────────────────────────────────┐
+ │  Capital seguro recomendado:       ${pad(fmt(vpPerdida + invalidez.adaptacionVivienda), 15, 'right')}         │
+ │  Cobertura adicional sugerida:     ${pad(fmt(Math.max(0, vpPerdida + invalidez.adaptacionVivienda - invalidez.seguroPrivadoCapital)), 15, 'right')}         │
+ └────────────────────────────────────────────────────────────────┘`;
+
+  // ========== FOOTER ==========
+  const footer = `
+
+${line('═', 80)}
+📧 RESUMEN ENVIADO DESDE: PlanFinanciero v2.0
+📅 FECHA: ${fecha}
+👤 CLIENTE: ${clientName || clientId}
+📋 ID SESIÓN: ${clientId}
+${line('═', 80)}
+
+Datos completos para reimportación (JSON):
+${JSON.stringify(state, null, 2)}
+`;
+
+  return hoja1 + hoja2 + hoja3 + hoja4 + hoja5 + hoja6 + hoja7 + hoja8 + footer;
+};const SendToAdvisor = ({ clientId, clientName, state, onClose }) => {
+  const [report] = useState(()=>buildAdvisorReport(clientId, state, clientName));
+  const [copied, setCopied] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [sendError, setSendError] = useState('');
+
+  const subject = `Plan Financiero — ${clientName||clientId} — ${new Date().toLocaleDateString('es-ES')}`;
+
+  const sendDirect = async () => {
+    setSending(true); setSendError('');
+    const result = await sendEmailDirect({ subject, body: report, clientName });
+    setSending(false);
+    if (result.ok) {
+      setSent(true);
+      setTimeout(()=>onClose(), 2200);
+    } else {
+      setSendError('No se pudo enviar. Revisa tu conexión a Internet o utiliza una de las otras opciones (descargar/copiar/correo).');
+    }
+  };
+
+  const openMail = () => {
+    const shortBody = report.split('═══════════════════════════════════════\nDATOS COMPLETOS')[0]
+      + '\n\n[El JSON completo va por separado — pulsa "Copiar al portapapeles" antes de enviar.]';
+    const url = `mailto:${ADVISOR_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(shortBody)}`;
+    window.location.href = url;
+  };
+
+  const copyAll = async () => {
+    try {
+      await navigator.clipboard.writeText(report);
+      setCopied(true);
+      setTimeout(()=>setCopied(false), 2000);
+    } catch {
+      alert('No se pudo copiar automáticamente. Selecciona el texto y cópialo manualmente.');
+    }
+  };
+
+  const downloadTxt = () => {
+    const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `plan-financiero-${(clientName||clientId).toString().replace(/[^a-zA-Z0-9]/g,'-')}-${new Date().toISOString().slice(0,10)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={e=>e.stopPropagation()}>
+        <div className="modal-header">
+          <div className="modal-title">📧 Enviar resumen a tu asesor</div>
+          <button className="modal-close" onClick={onClose}>×</button>
+        </div>
+        <div className="modal-body">
+          {sent ? (
+            <div style={{padding:'40px 20px',textAlign:'center'}}>
+              <div style={{fontSize:48,marginBottom:12}}>✅</div>
+              <div style={{fontSize:18,fontWeight:700,color:'var(--green)',marginBottom:6}}>¡Enviado correctamente!</div>
+              <div style={{fontSize:13,color:'var(--muted)'}}>Tu asesor ha recibido el resumen completo.</div>
+            </div>
+          ) : (
+            <>
+              <div style={{fontSize:12,color:'var(--muted)',marginBottom:10}}>
+                Este resumen se enviará a <strong style={{color:'var(--navy)'}}>{ADVISOR_EMAIL}</strong>.
+                Revísalo antes de enviar.
+              </div>
+              <div className="email-preview">{report}</div>
+              {sendError && <div className="auth-error" style={{marginTop:12}}>⚠ {sendError}</div>}
+            </>
+          )}
+        </div>
+        {!sent && (
+          <div className="modal-footer">
+            <button className="modal-btn" onClick={downloadTxt}>📥 Descargar .txt</button>
+            <button className="modal-btn" onClick={copyAll}>{copied?'✓ Copiado':'📋 Copiar'}</button>
+            <button className="modal-btn" onClick={openMail}>✉ Abrir correo</button>
+            <button className="modal-btn primary" onClick={sendDirect} disabled={sending} style={{minWidth:140}}>
+              {sending ? '⏳ Enviando...' : '🚀 Enviar ahora'}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+function App() {
+  // Determine mode from URL: client mode if ?c=token, advisor mode otherwise
+  const [clientCtx, setClientCtx] = useState(()=>CLIENT.parseUrl());
+  const [demoMode, setDemoMode] = useState(false);
+  const [showSendAdvisor, setShowSendAdvisor] = useState(false);
+  const [activeTab, setActiveTab] = useState(()=>{try{return localStorage.getItem('fin_tab')||'sheet1'}catch{return'sheet1'}});
+
+  // Effective client identity (token + name)
+  const effectiveClient = clientCtx || (demoMode ? { token: 'demo', name: 'Modo Demo' } : null);
+  const stateKey = effectiveClient ? `pf_state_${effectiveClient.token}` : null;
+
+  const [state, setState] = useState(()=>{
+    if (!stateKey) return INITIAL_STATE;
+    try{
+      const saved=localStorage.getItem(stateKey);
+      if(!saved) return INITIAL_STATE;
+      const parsed=JSON.parse(saved);
+      return{...INITIAL_STATE,...parsed,
+        gastos:(parsed.gastos||INITIAL_STATE.gastos).map(g=>({...g,confirmed:g.confirmed!==undefined?g.confirmed:true})),
+        ingresos:(parsed.ingresos||INITIAL_STATE.ingresos).map(i=>({...i,confirmed:i.confirmed!==undefined?i.confirmed:true})),
+        objetivos:(parsed.objetivos||INITIAL_STATE.objetivos).map(o=>({...o,confirmed:o.confirmed!==undefined?o.confirmed:true})),
+        hipotecas:parsed.hipotecas||INITIAL_STATE.hipotecas,
+        invalidez:{...INITIAL_STATE.invalidez,...(parsed.invalidez||{})},
+        seguros:{...INITIAL_STATE.seguros,...(parsed.seguros||{})},
+        balanceDetalle:{...INITIAL_STATE.balanceDetalle,...(parsed.balanceDetalle||{})},
+      };
+    }catch{return INITIAL_STATE}
+  });
+
+  // Reload state when client identity changes
+  useEffect(()=>{
+    if (!stateKey) return;
+    try{
+      const saved=localStorage.getItem(stateKey);
+      if(saved){
+        const parsed=JSON.parse(saved);
+        setState({...INITIAL_STATE,...parsed,
+          gastos:(parsed.gastos||INITIAL_STATE.gastos).map(g=>({...g,confirmed:g.confirmed!==undefined?g.confirmed:true})),
+          ingresos:(parsed.ingresos||INITIAL_STATE.ingresos).map(i=>({...i,confirmed:i.confirmed!==undefined?i.confirmed:true})),
+          objetivos:(parsed.objetivos||INITIAL_STATE.objetivos).map(o=>({...o,confirmed:o.confirmed!==undefined?o.confirmed:true})),
+          hipotecas:parsed.hipotecas||INITIAL_STATE.hipotecas,
+          invalidez:{...INITIAL_STATE.invalidez,...(parsed.invalidez||{})},
+          seguros:{...INITIAL_STATE.seguros,...(parsed.seguros||{})},
+          balanceDetalle:{...INITIAL_STATE.balanceDetalle,...(parsed.balanceDetalle||{})},
+        });
+      } else {
+        setState(INITIAL_STATE);
+      }
+    }catch{ setState(INITIAL_STATE); }
+  },[stateKey]);
+
+  useEffect(()=>{
+    if (!stateKey) return;
+    try{localStorage.setItem(stateKey,JSON.stringify(state))}catch{}
+  },[state, stateKey]);
+  useEffect(()=>{try{localStorage.setItem('fin_tab',activeTab)}catch{}},[activeTab]);
+
+  const resetState = () => {
+    if(confirm('¿Restablecer todos los datos a los valores por defecto?')){
+      setState(INITIAL_STATE);
+      if (stateKey) try{localStorage.removeItem(stateKey)}catch{}
+    }
+  };
+
+  // ADVISOR HOME (no token in URL, not in demo mode)
+  if (!effectiveClient) {
+    return <AdvisorHome onUseDemo={()=>setDemoMode(true)} />;
+  }
+
+  // PIN GATE: client mode with PIN hash in URL, not yet unlocked
+  if (clientCtx && clientCtx.pinHash && !CLIENT.isUnlocked(clientCtx.token)) {
+    return <PinGate
+      token={clientCtx.token}
+      name={clientCtx.name}
+      expectedHash={clientCtx.pinHash}
+      onUnlock={()=>setClientCtx({...clientCtx})} />;
+  }
+
+  // CLIENT MODE (or demo)
+  const props={state,setState};
+  const renderTab=()=>{switch(activeTab){case 'sheet1':return<Sheet1 {...props}/>;case 'sheet2':return<Sheet2 {...props}/>;case 'sheet3':return<Sheet3 {...props}/>;case 'sheet4':return<Sheet4 {...props}/>;case 'sheet5':return<Sheet5 {...props}/>;case 'sheet6':return<Sheet6 {...props}/>;case 'sheet7':return<Sheet7 {...props}/>;case 'sheet8':return<Sheet8 {...props}/>;default:return null;}};
+
+  const isDemo = demoMode && !clientCtx;
+
+  return (
+    <>
+      <header className="app-header">
+        <div className="app-logo">💼 Plan<span>Financiero</span></div>
+        <div style={{fontSize:11,color:'rgba(255,255,255,.7)',marginLeft:14}}>
+          {isDemo ? '🧪 Modo demo — los datos no se guardan permanentemente' : <>Hola, <strong style={{color:'#fff'}}>{effectiveClient.name}</strong></>}
+        </div>
+        <div style={{marginLeft:'auto',display:'flex',gap:10,alignItems:'center'}}>
+          <button className="send-advisor-btn" onClick={()=>setShowSendAdvisor(true)} title="Enviar resumen a tu asesor financiero">
+            ✉ Enviar a mi asesor
+          </button>
+          <button onClick={resetState} style={{background:'rgba(255,255,255,0.1)',border:'1px solid rgba(255,255,255,0.2)',color:'white',padding:'5px 12px',borderRadius:6,cursor:'pointer',fontSize:11,fontFamily:'inherit'}}>↻ Restablecer</button>
+          {isDemo && <button onClick={()=>setDemoMode(false)} style={{background:'rgba(255,255,255,0.1)',border:'1px solid rgba(255,255,255,0.2)',color:'white',padding:'5px 12px',borderRadius:6,cursor:'pointer',fontSize:11,fontFamily:'inherit'}}>← Volver al panel</button>}
+        </div>
+      </header>
+      <nav className="tab-bar">{TABS.map(t=>(<button key={t.id} className={`tab ${activeTab===t.id?'active':''}`} onClick={()=>setActiveTab(t.id)}>{t.label}</button>))}</nav>
+      <div className="main-scroll">{renderTab()}</div>
+
+      {showSendAdvisor && <SendToAdvisor clientId={effectiveClient.token} clientName={effectiveClient.name} state={state} onClose={()=>setShowSendAdvisor(false)}/>}
+    </>
+  );
+}
+const root=ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App/>);
+</script>
+</body>
+</html>
